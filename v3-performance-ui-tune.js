@@ -5,42 +5,90 @@
     const style = document.createElement("style");
     style.id = "frameforge-performance-tune-styles";
     style.textContent = `
-      /* Keep the original FPS DOM alive for live recalculation, but hide its visual donut. */
-      .fps-card .fps-orbit.ff-bottleneck-orbit {
-        min-width: 220px;
-        width: 220px;
-        height: auto;
-        display: flex;
-        align-items: stretch;
-        justify-content: center;
-        padding: 18px;
+      /*
+       * Clean performance-card layout.
+       * The legacy FPS ring remains in the DOM so the engine can keep updating it,
+       * but it no longer participates in visual layout. The bottleneck meter is a
+       * real grid column of its own, so it can never overlap the result copy.
+       */
+      .fps-card.ff-performance-layout {
+        position: relative !important;
+        display: grid !important;
+        grid-template-columns: minmax(230px, 270px) minmax(0, 1fr) !important;
+        align-items: stretch !important;
+        column-gap: 24px !important;
+        row-gap: 0 !important;
+        min-width: 0 !important;
       }
 
-      .fps-card .fps-orbit.ff-bottleneck-orbit > .fps-ring {
+      .fps-card.ff-performance-layout > .fps-orbit {
         position: absolute !important;
+        inset: auto !important;
+        left: 0 !important;
+        top: 0 !important;
         width: 1px !important;
+        min-width: 0 !important;
+        max-width: 1px !important;
         height: 1px !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
         overflow: hidden !important;
         clip: rect(0 0 0 0) !important;
         clip-path: inset(50%) !important;
-        white-space: nowrap !important;
         opacity: 0 !important;
         pointer-events: none !important;
+        transform: none !important;
+      }
+
+      .fps-card.ff-performance-layout > .fps-orbit::before,
+      .fps-card.ff-performance-layout > .fps-orbit::after,
+      .fps-card.ff-performance-layout > .fps-orbit .fps-ring::before,
+      .fps-card.ff-performance-layout > .fps-orbit .fps-ring::after {
+        display: none !important;
+        content: none !important;
+      }
+
+      .fps-card.ff-performance-layout > .ff-bottleneck-meter {
+        grid-column: 1;
+        grid-row: 1;
+        align-self: stretch;
+      }
+
+      .fps-card.ff-performance-layout > .fps-copy {
+        grid-column: 2;
+        grid-row: 1;
+        position: relative !important;
+        z-index: 1;
+        min-width: 0 !important;
+        width: auto !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 2px 0 !important;
+        transform: none !important;
+      }
+
+      .fps-card.ff-performance-layout .fps-copy > * {
+        min-width: 0;
       }
 
       .ff-bottleneck-meter {
         width: 100%;
         min-width: 0;
         box-sizing: border-box;
-        padding: 15px 14px;
-        border: 1px solid rgba(255,255,255,.065);
-        border-radius: 12px;
-        background: rgba(255,255,255,.018);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 17px 16px;
+        border: 1px solid rgba(255,255,255,.075);
+        border-radius: 13px;
+        background:
+          linear-gradient(180deg, rgba(101,243,255,.025), rgba(255,255,255,.012));
       }
 
       .ff-bottleneck-kicker {
         display: block;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
         color: var(--text-muted);
         font-size: 8.5px;
         font-weight: 700;
@@ -50,28 +98,37 @@
       }
 
       .ff-bottleneck-values {
-        display: flex;
-        align-items: baseline;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 8px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: end;
+        gap: 16px;
+        margin-bottom: 9px;
       }
 
       .ff-bottleneck-values span {
-        display: inline-flex;
-        align-items: baseline;
-        gap: 5px;
-        color: var(--text-soft);
-        font-size: 9px;
-        font-weight: 600;
-        letter-spacing: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        min-width: 0;
+        color: var(--text-muted);
+        font-size: 8px;
+        font-weight: 650;
+        line-height: 1.2;
+        letter-spacing: .035em;
+      }
+
+      .ff-bottleneck-values .is-cpu {
+        text-align: right;
+        align-items: flex-end;
       }
 
       .ff-bottleneck-values strong {
         color: var(--text);
         font-family: var(--font-display);
-        font-size: 14px;
-        font-weight: 700;
+        font-size: 17px;
+        font-weight: 720;
+        line-height: 1;
+        letter-spacing: -0.02em;
       }
 
       .ff-bottleneck-values .is-gpu strong { color: var(--cyan); }
@@ -79,6 +136,7 @@
 
       .ff-bottleneck-track {
         position: relative;
+        width: 100%;
         height: 9px;
         display: flex;
         overflow: hidden;
@@ -88,7 +146,9 @@
       }
 
       .ff-bottleneck-track > span {
+        display: block;
         height: 100%;
+        min-width: 0;
         transition: width 220ms ease;
       }
 
@@ -103,11 +163,22 @@
 
       .ff-bottleneck-caption {
         display: block;
-        margin-top: 9px;
+        margin-top: 11px;
         color: var(--text-muted);
         font-size: 9px;
-        line-height: 1.35;
+        line-height: 1.45;
         letter-spacing: 0;
+      }
+
+      .fps-card.ff-performance-layout .fps-meta {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 10px !important;
+        width: 100% !important;
+      }
+
+      .fps-card.ff-performance-layout .fps-meta > div {
+        min-width: 0 !important;
       }
 
       /* The FPS gap belongs with the target gauge, not under the headline FPS. */
@@ -160,25 +231,62 @@
       }
 
       @media (min-width: 3000px) {
-        .fps-card .fps-orbit.ff-bottleneck-orbit {
-          min-width: 250px;
-          width: 250px;
+        .fps-card.ff-performance-layout {
+          grid-template-columns: minmax(280px, 330px) minmax(0, 1fr) !important;
+          column-gap: 30px !important;
         }
-        .ff-bottleneck-meter { padding: 17px 16px; }
-        .ff-bottleneck-values strong { font-size: 16px; }
+        .ff-bottleneck-meter { padding: 20px 19px; }
+        .ff-bottleneck-values strong { font-size: 19px; }
         .ff-bottleneck-caption,
         .goal-card .verdict-summary { font-size: 11px; }
         .scenario-target-badge { font-size: 8.5px; padding: 4px 8px; }
       }
 
-      @media (max-width: 760px) {
-        .fps-card .fps-orbit.ff-bottleneck-orbit {
-          width: 100%;
-          min-width: 0;
-          padding: 0 0 12px;
+      @media (max-width: 1100px) {
+        .fps-card.ff-performance-layout {
+          grid-template-columns: minmax(200px, 235px) minmax(0, 1fr) !important;
+          column-gap: 18px !important;
         }
-        .ff-bottleneck-meter { width: 100%; }
-        .scenario-target-badge { top: 8px; right: 8px; }
+      }
+
+      @media (max-width: 820px) {
+        .fps-card.ff-performance-layout {
+          grid-template-columns: 1fr !important;
+          row-gap: 14px !important;
+        }
+
+        .fps-card.ff-performance-layout > .ff-bottleneck-meter,
+        .fps-card.ff-performance-layout > .fps-copy {
+          grid-column: 1;
+        }
+
+        .fps-card.ff-performance-layout > .ff-bottleneck-meter {
+          grid-row: 1;
+        }
+
+        .fps-card.ff-performance-layout > .fps-copy {
+          grid-row: 2;
+          padding: 0 !important;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .ff-bottleneck-meter {
+          padding: 14px;
+        }
+
+        .fps-card.ff-performance-layout .fps-meta {
+          grid-template-columns: 1fr !important;
+        }
+
+        .ff-bottleneck-values strong {
+          font-size: 16px;
+        }
+
+        .scenario-target-badge {
+          top: 8px;
+          right: 8px;
+        }
       }
     `;
     document.head.appendChild(style);
@@ -196,29 +304,44 @@
     return { gpu, cpu: 100 - gpu };
   }
 
-  function renderBottleneckMeter(result) {
-    const orbit = document.querySelector(".fps-card .fps-orbit");
-    if (!orbit) return;
+  function ensureCleanPerformanceLayout() {
+    const card = document.querySelector(".fps-card");
+    const orbit = card?.querySelector(":scope > .fps-orbit");
+    const copy = card?.querySelector(":scope > .fps-copy");
+    if (!card || !orbit || !copy) return null;
 
-    orbit.classList.add("ff-bottleneck-orbit");
+    card.classList.add("ff-performance-layout");
 
-    let meter = orbit.querySelector(".ff-bottleneck-meter");
+    let meter = card.querySelector(":scope > .ff-bottleneck-meter");
     if (!meter) {
-      meter = document.createElement("div");
-      meter.className = "ff-bottleneck-meter";
-      meter.innerHTML = `
-        <span class="ff-bottleneck-kicker" id="ff-bottleneck-kicker">BOTTLENECK BALANCE</span>
-        <div class="ff-bottleneck-values">
-          <span class="is-gpu">GPU <strong id="ff-bottleneck-gpu-value">—</strong></span>
-          <span class="is-cpu">CPU <strong id="ff-bottleneck-cpu-value">—</strong></span>
-        </div>
-        <div class="ff-bottleneck-track" aria-label="CPU GPU bottleneck balance">
-          <span class="ff-bottleneck-gpu" id="ff-bottleneck-gpu-bar"></span>
-          <span class="ff-bottleneck-cpu" id="ff-bottleneck-cpu-bar"></span>
-        </div>
-        <small class="ff-bottleneck-caption" id="ff-bottleneck-caption">—</small>`;
-      orbit.appendChild(meter);
+      // Migrate a meter created by an older version instead of duplicating it.
+      meter = orbit.querySelector(".ff-bottleneck-meter");
+      if (meter) meter.remove();
+      else {
+        meter = document.createElement("section");
+        meter.className = "ff-bottleneck-meter";
+        meter.setAttribute("aria-label", "CPU GPU bottleneck balance");
+        meter.innerHTML = `
+          <span class="ff-bottleneck-kicker" id="ff-bottleneck-kicker">BOTTLENECK BALANCE</span>
+          <div class="ff-bottleneck-values">
+            <span class="is-gpu">GPU <strong id="ff-bottleneck-gpu-value">—</strong></span>
+            <span class="is-cpu">CPU <strong id="ff-bottleneck-cpu-value">—</strong></span>
+          </div>
+          <div class="ff-bottleneck-track">
+            <span class="ff-bottleneck-gpu" id="ff-bottleneck-gpu-bar"></span>
+            <span class="ff-bottleneck-cpu" id="ff-bottleneck-cpu-bar"></span>
+          </div>
+          <small class="ff-bottleneck-caption" id="ff-bottleneck-caption">—</small>`;
+      }
+      card.insertBefore(meter, copy);
     }
+
+    return meter;
+  }
+
+  function renderBottleneckMeter(result) {
+    const meter = ensureCleanPerformanceLayout();
+    if (!meter) return;
 
     const shares = bottleneckShares(result);
     byId("ff-bottleneck-gpu-value").textContent = `${shares.gpu}%`;
