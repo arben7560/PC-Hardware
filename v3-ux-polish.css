@@ -1,0 +1,660 @@
+/* =========================================================
+   FRAMEFORGE V3 — UX HIERARCHY POLISH
+   Verdict-first hierarchy, clearer modeling disclosure,
+   explained ratios and progressive decision content.
+========================================================= */
+
+:root {
+  --ux-soft-label: #8d96aa;
+}
+
+/* Improve the contrast of the smallest structural labels. */
+.section-kicker,
+.hardware-input label,
+.compact-field label,
+.target-control > label,
+.reference-target-line span,
+.reference-hardware-line span,
+.reference-match-top span,
+.ratio-grid article > span {
+  color: var(--ux-soft-label);
+}
+
+/* The sticky builder is a control surface, not another content card. */
+.builder-panel {
+  border-color: rgba(101,243,255,.11);
+  background:
+    linear-gradient(180deg, rgba(18,21,30,.975), rgba(11,13,19,.96));
+  box-shadow:
+    0 28px 78px rgba(0,0,0,.40),
+    inset 3px 0 0 rgba(101,243,255,.09),
+    inset 0 1px rgba(255,255,255,.025);
+}
+
+.builder-persistent-cue {
+  min-height: 30px;
+  margin: 11px 0 10px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(101,243,255,.09);
+  border-radius: 8px;
+  background: rgba(101,243,255,.025);
+}
+
+.builder-persistent-cue > span {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 10px rgba(101,243,255,.45);
+}
+
+.builder-persistent-cue strong {
+  color: #9aa5b8;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .11em;
+}
+
+/* ---------------------------------------------------------
+   Primary verdict: the answer to "will it run how I want?"
+--------------------------------------------------------- */
+
+.verdict-priority-card {
+  position: relative;
+  margin-top: 18px;
+  padding: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(101,243,255,.17);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 86% 10%, rgba(101,243,255,.08), transparent 18rem),
+    radial-gradient(circle at 12% 100%, rgba(139,115,255,.055), transparent 20rem),
+    linear-gradient(180deg, rgba(13,18,25,.92), rgba(8,11,16,.90));
+  box-shadow:
+    0 18px 50px rgba(0,0,0,.26),
+    inset 0 1px rgba(255,255,255,.025);
+}
+
+.verdict-priority-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--cyan);
+  opacity: .52;
+}
+
+.verdict-priority-card.is-met::before {
+  background: var(--green);
+  opacity: .76;
+}
+
+.verdict-priority-card.is-near::before {
+  background: var(--yellow);
+  opacity: .78;
+}
+
+.verdict-priority-card.is-miss::before {
+  background: var(--red);
+  opacity: .66;
+}
+
+.verdict-topline {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 22px;
+}
+
+.verdict-target {
+  margin-top: 4px;
+  color: var(--text-soft);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.verdict-confidence-chip {
+  min-width: 132px;
+  padding: 9px 11px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  border: 1px solid rgba(101,243,255,.09);
+  border-radius: 10px;
+  background: rgba(255,255,255,.018);
+}
+
+.verdict-confidence-chip span {
+  color: var(--muted);
+  font-size: 7px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+
+.verdict-confidence-chip strong {
+  color: var(--cyan);
+  font-family: var(--font-display);
+  font-size: 17px;
+}
+
+.verdict-main-row {
+  position: relative;
+  z-index: 1;
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: minmax(260px, .82fr) minmax(0, 1.18fr);
+  gap: 22px;
+  align-items: stretch;
+}
+
+.verdict-number-block {
+  min-height: 144px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,.055);
+  border-radius: 14px;
+  background: rgba(0,0,0,.13);
+}
+
+.verdict-fps-line {
+  display: flex;
+  align-items: flex-end;
+  gap: 9px;
+}
+
+.verdict-fps-line strong {
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 62px;
+  line-height: .88;
+  letter-spacing: -.07em;
+}
+
+.verdict-fps-line span {
+  padding-bottom: 5px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .11em;
+}
+
+.verdict-status {
+  margin-top: 12px;
+  width: max-content;
+  max-width: 100%;
+  padding: 5px 8px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 6px;
+  color: var(--text-soft);
+  background: rgba(255,255,255,.018);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.is-met .verdict-status {
+  border-color: rgba(108,246,173,.18);
+  color: var(--green);
+  background: rgba(108,246,173,.045);
+}
+
+.is-near .verdict-status {
+  border-color: rgba(255,224,114,.18);
+  color: var(--yellow);
+  background: rgba(255,224,114,.04);
+}
+
+.is-miss .verdict-status {
+  border-color: rgba(255,115,134,.16);
+  color: #ff9aaa;
+  background: rgba(255,115,134,.035);
+}
+
+.verdict-summary {
+  margin: 8px 0 0;
+  color: #8f98aa;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.verdict-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 9px;
+}
+
+.verdict-meta-grid > div {
+  min-height: 100%;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 12px;
+  background: rgba(255,255,255,.014);
+}
+
+.verdict-meta-grid span {
+  color: var(--muted);
+  font-size: 7px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+
+.verdict-meta-grid strong {
+  margin-top: 6px;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.verdict-model-disclosure {
+  position: relative;
+  z-index: 1;
+  margin-top: 12px;
+  min-height: 48px;
+  padding: 9px 11px;
+  display: grid;
+  grid-template-columns: auto minmax(0,1fr) auto;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(101,243,255,.095);
+  border-radius: 10px;
+  background: rgba(101,243,255,.025);
+}
+
+.verdict-model-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 12px rgba(101,243,255,.4);
+}
+
+.verdict-model-disclosure > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.verdict-model-disclosure strong {
+  color: #b9c4d5;
+  font-size: 7px;
+  letter-spacing: .11em;
+}
+
+.verdict-model-disclosure small {
+  margin-top: 2px;
+  color: #798397;
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+.verdict-method-link {
+  padding: 7px 9px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--cyan);
+  font-size: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.verdict-method-link:hover {
+  background: rgba(101,243,255,.055);
+}
+
+.goal-card-integrated {
+  position: relative;
+  z-index: 1;
+  margin: 12px 0 0;
+  padding: 11px 13px;
+  border-color: rgba(255,255,255,.055);
+  background: rgba(0,0,0,.10);
+}
+
+.goal-card-integrated .goal-card-head {
+  align-items: center;
+}
+
+.goal-card-integrated .section-kicker {
+  margin-bottom: 3px;
+}
+
+.goal-card-integrated .goal-scale {
+  margin-top: 10px;
+}
+
+/* Secondary technical layer remains visible but no longer competes with verdict. */
+.analysis-tier-heading {
+  margin: 20px 2px 9px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.analysis-tier-heading > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.analysis-tier-heading strong {
+  color: #d7dce6;
+  font-family: var(--font-display);
+  font-size: 13px;
+}
+
+.analysis-tier-heading small {
+  max-width: 430px;
+  color: #70798b;
+  font-size: 8px;
+  line-height: 1.45;
+  text-align: right;
+}
+
+.performance-panel .performance-grid {
+  margin-top: 0;
+  opacity: .92;
+}
+
+.performance-panel .fps-card,
+.performance-panel .metrics-card {
+  border-color: rgba(255,255,255,.06);
+  background: rgba(5,7,11,.28);
+}
+
+/* Clarify that scenario cards are distinct strategies, not ordered quality steps. */
+.performance-profiles-heading {
+  margin-top: 18px;
+}
+
+.scenario-strip {
+  margin-top: 0;
+}
+
+.scenario-strip article {
+  min-height: 94px;
+}
+
+.scenario-strip article.is-highlighted {
+  background: rgba(101,243,255,.04);
+}
+
+.scenario-strip article.is-highlighted::before {
+  background: var(--cyan);
+  box-shadow: 0 0 12px rgba(101,243,255,.18);
+}
+
+/* ---------------------------------------------------------
+   Explain advanced ratios where they appear.
+--------------------------------------------------------- */
+
+.ratio-grid article.ratio-explained {
+  position: relative;
+  overflow: visible;
+  z-index: 2;
+}
+
+.ratio-help-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 19px;
+  height: 19px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(101,243,255,.16);
+  border-radius: 50%;
+  background: rgba(101,243,255,.035);
+  color: #8cecf6;
+  font-family: var(--font-display);
+  font-size: 9px;
+  font-weight: 700;
+  cursor: help;
+  opacity: .78;
+}
+
+.ratio-help-button:hover,
+.ratio-help-button:focus-visible {
+  opacity: 1;
+  border-color: rgba(101,243,255,.38);
+  background: rgba(101,243,255,.08);
+  outline: 0;
+}
+
+.ratio-help-tooltip {
+  position: absolute;
+  right: 9px;
+  top: 35px;
+  z-index: 80;
+  width: min(270px, calc(100vw - 60px));
+  padding: 11px 12px;
+  border: 1px solid rgba(101,243,255,.14);
+  border-radius: 10px;
+  background: rgba(8,11,16,.985);
+  box-shadow: 0 18px 40px rgba(0,0,0,.42);
+  color: var(--text-soft);
+  font-size: 9px;
+  line-height: 1.5;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(5px);
+  transition: 140ms ease;
+  pointer-events: none;
+}
+
+.ratio-explained:hover .ratio-help-tooltip,
+.ratio-explained:focus-within .ratio-help-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+.ratio-help-copy {
+  display: block;
+}
+
+.ratio-help-copy-fr {
+  display: none;
+}
+
+html[lang="fr"] .ratio-help-copy-en {
+  display: none;
+}
+
+html[lang="fr"] .ratio-help-copy-fr {
+  display: block;
+}
+
+/* ---------------------------------------------------------
+   Progressive disclosure for purchase/market content.
+--------------------------------------------------------- */
+
+.secondary-disclosure {
+  margin: 0;
+  scroll-margin-top: 100px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 15px;
+  background: linear-gradient(180deg, rgba(15,17,24,.72), rgba(10,12,17,.64));
+  overflow: hidden;
+}
+
+.secondary-disclosure > summary {
+  min-height: 72px;
+  padding: 13px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.secondary-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.secondary-disclosure > summary > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.secondary-disclosure > summary strong {
+  color: #d8dde7;
+  font-family: var(--font-display);
+  font-size: 14px;
+}
+
+.secondary-disclosure > summary small {
+  margin-top: 3px;
+  color: #70798b;
+  font-size: 8px;
+}
+
+.secondary-disclosure-action {
+  min-width: 78px;
+  padding: 7px 10px;
+  border: 1px solid rgba(101,243,255,.11);
+  border-radius: 8px;
+  color: #9da8b9;
+  background: rgba(101,243,255,.025);
+  font-size: 8px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.secondary-disclosure[open] > summary {
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+.secondary-disclosure .lower-grid {
+  padding: 12px;
+  gap: 12px;
+}
+
+.secondary-disclosure .lower-grid .panel {
+  box-shadow: none;
+  border-color: rgba(255,255,255,.055);
+  background: linear-gradient(180deg, rgba(17,19,27,.84), rgba(11,13,18,.82));
+}
+
+/* Slightly soften non-critical pills and badges to reduce competing emphasis. */
+.performance-panel .quality-pill,
+.market-card .price-state,
+.official-reference-panel .reference-tier em {
+  box-shadow: none;
+}
+
+/* ---------------------------------------------------------
+   Ultrawide refinement
+--------------------------------------------------------- */
+
+@media (min-width: 3000px) {
+  .builder-persistent-cue strong {
+    font-size: 8px;
+  }
+
+  .verdict-priority-card {
+    padding: 23px;
+  }
+
+  .verdict-target {
+    font-size: 12px;
+  }
+
+  .verdict-fps-line strong {
+    font-size: 72px;
+  }
+
+  .verdict-fps-line span {
+    font-size: 11px;
+  }
+
+  .verdict-status {
+    font-size: 9px;
+  }
+
+  .verdict-summary {
+    font-size: 10px;
+  }
+
+  .verdict-confidence-chip span,
+  .verdict-meta-grid span,
+  .verdict-model-disclosure strong {
+    font-size: 8px;
+  }
+
+  .verdict-confidence-chip strong {
+    font-size: 19px;
+  }
+
+  .verdict-meta-grid strong {
+    font-size: 18px;
+  }
+
+  .verdict-model-disclosure small,
+  .verdict-method-link,
+  .analysis-tier-heading small,
+  .secondary-disclosure > summary small,
+  .secondary-disclosure-action {
+    font-size: 9px;
+  }
+
+  .analysis-tier-heading strong {
+    font-size: 15px;
+  }
+
+  .ratio-help-tooltip {
+    font-size: 10px;
+  }
+
+  .secondary-disclosure > summary {
+    min-height: 78px;
+    padding: 15px 18px;
+  }
+
+  .secondary-disclosure > summary strong {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 1380px) {
+  .verdict-main-row {
+    grid-template-columns: 1fr;
+  }
+
+  .verdict-number-block {
+    min-height: 124px;
+  }
+
+  .verdict-meta-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .analysis-tier-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .analysis-tier-heading small {
+    text-align: left;
+  }
+}
