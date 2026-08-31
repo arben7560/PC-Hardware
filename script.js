@@ -11,6 +11,7 @@
     "v3-framegen-ui.js",
     "v3-copy-audit.js",
     "v3-reference-compact.js",
+    "v3-reference-layout-fix.js",
     "nav-focus.js",
     "responsive-layout.js"
   ];
