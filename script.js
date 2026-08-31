@@ -12,6 +12,7 @@
     "v3-copy-audit.js",
     "v3-reference-compact.js",
     "v3-reference-layout-fix.js",
+    "v3-performance-ui-tune.js",
     "nav-focus.js",
     "responsive-layout.js"
   ];
