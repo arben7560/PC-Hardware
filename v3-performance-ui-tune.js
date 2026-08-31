@@ -5,28 +5,53 @@
     const style = document.createElement("style");
     style.id = "frameforge-performance-tune-styles";
     style.textContent = `
-      /* Replace the repeated FPS donut with a single CPU/GPU bottleneck meter. */
+      /* Give the bottleneck meter and performance summary their own columns. */
+      .fps-card {
+        display: grid !important;
+        grid-template-columns: minmax(230px, 270px) minmax(0, 1fr) !important;
+        align-items: stretch !important;
+        gap: 18px !important;
+      }
+
       .fps-card .fps-orbit.ff-bottleneck-orbit {
-        min-width: 220px;
-        width: 220px;
-        height: auto;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 18px;
+        position: static !important;
+        inset: auto !important;
+        transform: none !important;
+        margin: 0 !important;
+        min-width: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        display: flex !important;
+        align-items: stretch !important;
+        justify-content: stretch !important;
+        padding: 0 !important;
+        z-index: auto !important;
+      }
+
+      .fps-card .fps-copy {
+        position: static !important;
+        min-width: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 16px 0 16px 2px !important;
       }
 
       .ff-bottleneck-meter {
         width: 100%;
-        padding: 15px 14px;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 16px;
         border: 1px solid rgba(255,255,255,.065);
         border-radius: 12px;
         background: rgba(255,255,255,.018);
+        box-sizing: border-box;
       }
 
       .ff-bottleneck-kicker {
         display: block;
-        margin-bottom: 10px;
+        margin-bottom: 11px;
         color: var(--text-muted);
         font-size: 8.5px;
         font-weight: 700;
@@ -36,21 +61,26 @@
       }
 
       .ff-bottleneck-values {
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         align-items: baseline;
-        justify-content: space-between;
         gap: 12px;
-        margin-bottom: 8px;
+        margin-bottom: 9px;
       }
 
       .ff-bottleneck-values span {
         display: inline-flex;
         align-items: baseline;
         gap: 5px;
+        min-width: 0;
         color: var(--text-soft);
         font-size: 9px;
         font-weight: 600;
         letter-spacing: 0;
+      }
+
+      .ff-bottleneck-values span:last-child {
+        justify-content: flex-end;
       }
 
       .ff-bottleneck-values strong {
@@ -75,6 +105,7 @@
 
       .ff-bottleneck-track > span {
         height: 100%;
+        min-width: 0;
         transition: width 220ms ease;
       }
 
@@ -89,11 +120,22 @@
 
       .ff-bottleneck-caption {
         display: block;
-        margin-top: 9px;
+        margin-top: 10px;
         color: var(--text-muted);
         font-size: 9px;
-        line-height: 1.35;
+        line-height: 1.45;
         letter-spacing: 0;
+      }
+
+      .fps-card .fps-copy .fps-meta {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+        width: 100% !important;
+      }
+
+      .fps-card .fps-copy .fps-meta > div {
+        min-width: 0;
       }
 
       /* The FPS gap belongs with the target gauge, not under the headline FPS. */
@@ -146,24 +188,33 @@
       }
 
       @media (min-width: 3000px) {
-        .fps-card .fps-orbit.ff-bottleneck-orbit {
-          min-width: 250px;
-          width: 250px;
+        .fps-card {
+          grid-template-columns: minmax(270px, 310px) minmax(0, 1fr) !important;
+          gap: 22px !important;
         }
-        .ff-bottleneck-meter { padding: 17px 16px; }
+        .ff-bottleneck-meter { padding: 18px; }
         .ff-bottleneck-values strong { font-size: 16px; }
         .ff-bottleneck-caption,
         .goal-card .verdict-summary { font-size: 11px; }
         .scenario-target-badge { font-size: 8.5px; padding: 4px 8px; }
       }
 
-      @media (max-width: 760px) {
-        .fps-card .fps-orbit.ff-bottleneck-orbit {
-          width: 100%;
-          min-width: 0;
-          padding: 0 0 12px;
+      @media (max-width: 1180px) {
+        .fps-card {
+          grid-template-columns: 1fr !important;
+          gap: 12px !important;
         }
+
+        .fps-card .fps-copy {
+          padding: 4px 0 0 !important;
+        }
+      }
+
+      @media (max-width: 760px) {
         .ff-bottleneck-meter { width: 100%; }
+        .fps-card .fps-copy .fps-meta {
+          grid-template-columns: 1fr !important;
+        }
         .scenario-target-badge { top: 8px; right: 8px; }
       }
     `;
