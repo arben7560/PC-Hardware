@@ -12,7 +12,7 @@
     style.id = STYLE_ID;
     style.textContent = `
       [id] {
-        scroll-margin-top: 18px;
+        scroll-margin-top: 98px;
       }
 
       .nav-focus-flash {
