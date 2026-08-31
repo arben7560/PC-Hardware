@@ -1,4 +1,9 @@
-/* FrameForge V3 — explicit Frame Generation / Multi Frame Generation modes */
+/* FrameForge V3 — explicit Frame Generation / Multi Frame Generation modes
+   Important: NVIDIA's 2X / 3X / 4X labels describe the nominal frame cadence
+   (rendered + generated frames). They are not universal measured FPS multipliers.
+   FrameForge therefore derives an effective estimate from the rendered FPS and
+   the current workload instead of applying fixed 1.62 / 2.30 / 2.85 constants.
+*/
 
 function frameGenModeForGpu(gpu, requestedMode, enabled = true) {
   if (!enabled || !gpu?.frameGen) return "off";
@@ -14,25 +19,89 @@ function frameGenModeForGpu(gpu, requestedMode, enabled = true) {
   return "off";
 }
 
-function frameGenModeMultiplier(gpu, mode) {
+function frameGenNominalMultiplier(gpu, mode) {
   if (!gpu?.frameGen || mode === "off") return 1;
-
   if (gpu.brand === "nvidia" && gpu.gen >= 50) {
-    if (mode === "mfg4x") return 2.85;
-    if (mode === "mfg3x") return 2.30;
-    return 1.68;
+    if (mode === "mfg4x") return 4;
+    if (mode === "mfg3x") return 3;
+    return 2;
   }
-
-  if (gpu.brand === "nvidia" && gpu.gen >= 40) return 1.62;
-  if (gpu.brand === "amd") return 1.52;
-  return 1;
+  // Standard Frame Generation inserts one generated frame between rendered frames.
+  return 2;
 }
 
-function officialReferenceFrameGenMultiplier(gpu, enabled) {
-  if (!enabled || !gpu?.frameGen) return 1;
-  if (gpu.brand === "nvidia") return gpu.gen >= 50 ? 1.68 : 1.62;
-  if (gpu.brand === "amd") return 1.52;
-  return 1;
+function frameGenPerformanceModel(gpu, mode, renderedFps, context = {}) {
+  const nominalMultiplier = frameGenNominalMultiplier(gpu, mode);
+  if (nominalMultiplier <= 1 || !Number.isFinite(renderedFps) || renderedFps <= 0) {
+    return {
+      nominalMultiplier: 1,
+      effectiveMultiplier: 1,
+      displayedFps: Math.max(0, renderedFps || 0),
+      generatedFramesPerRendered: 0,
+      efficiency: 1,
+      overheadMs: 0
+    };
+  }
+
+  const generatedFramesPerRendered = nominalMultiplier - 1;
+  const rtWeight = context.rtKey === "path" ? 1 : context.rtKey === "ultra" ? 0.72 : context.rtKey === "medium" ? 0.38 : 0;
+  const resolutionPixels = context.resolutionKey && RESOLUTIONS[context.resolutionKey]
+    ? pixels(context.resolutionKey)
+    : pixels("1440");
+  const resolutionWeight = clamp(Math.log2(Math.max(resolutionPixels / pixels("1080"), 1)) / 2.4, 0, 1);
+
+  // Frame-generation work is not free. Instead of pretending that 4X means
+  // measured FPS ×4, estimate a small per-frame scheduling/generation cost.
+  // Blackwell receives a lower base cost because MFG scheduling is hardware-assisted.
+  const isBlackwell = gpu.brand === "nvidia" && gpu.gen >= 50;
+  const baseOverheadMs = isBlackwell ? 0.72 : gpu.brand === "nvidia" ? 1.05 : 1.20;
+  const extraFrameCostMs = isBlackwell ? 0.18 : 0.28;
+  const workloadCostMs = 0.16 * rtWeight + 0.10 * resolutionWeight;
+  const overheadMs = baseOverheadMs + generatedFramesPerRendered * extraFrameCostMs + workloadCostMs;
+
+  // At very low rendered FPS, interpolation quality/latency limits make the
+  // headline multiplier less useful. At high base FPS, generation overhead
+  // consumes a larger share of the frame budget. This bell-shaped efficiency
+  // keeps the estimate scenario-dependent and conservative.
+  const lowBasePenalty = renderedFps < 45 ? clamp((45 - renderedFps) / 70, 0, 0.25) : 0;
+  const generationBudgetShare = clamp((overheadMs * renderedFps) / 1000, 0, 0.32);
+  const modeComplexityPenalty = generatedFramesPerRendered >= 3 ? 0.035 : generatedFramesPerRendered === 2 ? 0.02 : 0;
+  const efficiency = clamp(1 - lowBasePenalty - generationBudgetShare - modeComplexityPenalty, 0.68, 0.97);
+
+  // The rendered frame is always present. Efficiency only discounts generated
+  // frames, which is more faithful than multiplying the whole result by a fixed constant.
+  const effectiveMultiplier = 1 + generatedFramesPerRendered * efficiency;
+  const displayedFps = renderedFps * effectiveMultiplier;
+
+  return {
+    nominalMultiplier,
+    effectiveMultiplier,
+    displayedFps,
+    generatedFramesPerRendered,
+    efficiency,
+    overheadMs
+  };
+}
+
+function officialReferenceFrameGenModel(gpu, enabled, displayedReferenceFps, context = {}) {
+  if (!enabled || !gpu?.frameGen) {
+    return { renderedFps: displayedReferenceFps, effectiveMultiplier: 1, nominalMultiplier: 1 };
+  }
+
+  // RTX 40 official references use standard FG (nominal 2X). For an RTX 50
+  // reference without an explicit MFG mode, default conservatively to 2X.
+  const mode = gpu.brand === "nvidia" && gpu.gen >= 50 ? "mfg2x" : "fg";
+  let rendered = Math.max(1, displayedReferenceFps / 1.7);
+
+  // Solve the scenario-dependent model backwards so the published reference
+  // FPS remains the anchor rather than being altered by an arbitrary constant.
+  for (let i = 0; i < 8; i += 1) {
+    const model = frameGenPerformanceModel(gpu, mode, rendered, context);
+    rendered = displayedReferenceFps / Math.max(model.effectiveMultiplier, 1);
+  }
+
+  const finalModel = frameGenPerformanceModel(gpu, mode, rendered, context);
+  return { renderedFps: rendered, effectiveMultiplier: finalModel.effectiveMultiplier, nominalMultiplier: finalModel.nominalMultiplier };
 }
 
 function calculateScenario(overrides = {}) {
@@ -57,8 +126,11 @@ function calculateScenario(overrides = {}) {
   const refCpu = getCpu(reference.cpu);
   const refGpu = getGpu(reference.gpu);
 
-  const refFg = officialReferenceFrameGenMultiplier(refGpu, reference.frameGen);
-  const referenceRenderedFps = reference.fps / refFg;
+  const refFgModel = officialReferenceFrameGenModel(refGpu, reference.frameGen, reference.fps, {
+    resolutionKey: reference.resolution,
+    rtKey: reference.rt
+  });
+  const referenceRenderedFps = refFgModel.renderedFps;
 
   const userGpuScore = gpuScore(gpu, rtKey);
   const referenceGpuScore = gpuScore(refGpu, rtKey);
@@ -97,8 +169,9 @@ function calculateScenario(overrides = {}) {
     renderedFps = transitionStart + retainedExcess;
   }
 
-  const userFgMultiplier = frameGenModeMultiplier(gpu, frameGenMode);
-  const displayedFps = renderedFps * userFgMultiplier;
+  const frameGenModel = frameGenPerformanceModel(gpu, frameGenMode, renderedFps, { resolutionKey, rtKey });
+  const userFgMultiplier = frameGenModel.effectiveMultiplier;
+  const displayedFps = frameGenModel.displayedFps;
 
   const gpuPressure = clamp(renderedFps / Math.max(gpuCeiling, 1), 0, 1);
   const cpuPressure = clamp(renderedFps / Math.max(cpuCeiling, 1), 0, 1.2);
@@ -123,7 +196,13 @@ function calculateScenario(overrides = {}) {
   const smoothness = clamp(45 + Math.min(displayedFps, 165) / 165 * 36 + stability * 0.22 - (storage === "hdd" ? 6 : 0), 45, 99);
 
   return {
-    cpu, gpu, game, resolutionKey, presetKey, rtKey, upscalingKey, frameGen, frameGenMode, frameGenMultiplier: userFgMultiplier, ram, storage,
+    cpu, gpu, game, resolutionKey, presetKey, rtKey, upscalingKey, frameGen, frameGenMode,
+    frameGenMultiplier: userFgMultiplier,
+    frameGenNominalMultiplier: frameGenModel.nominalMultiplier,
+    frameGenEfficiency: frameGenModel.efficiency,
+    frameGenOverheadMs: frameGenModel.overheadMs,
+    generatedFramesPerRendered: frameGenModel.generatedFramesPerRendered,
+    ram, storage,
     fps: displayedFps, renderedFps, low: oneLow, frameTime, vramNeed, vramPressure, gpuLoad, cpuLoad,
     bottleneck, confidence, stability, smoothness, gpuCeiling, cpuCeiling,
     reference, refCpu, refGpu, referenceDistance: actualReferenceDistance, referenceMatch,
