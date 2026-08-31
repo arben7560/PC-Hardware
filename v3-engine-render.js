@@ -120,6 +120,10 @@ function renderPerformance(result) {
   const low = Math.max(1, round(result.low));
   const resLabel = RESOLUTIONS[result.resolutionKey].label;
   const presetLabel = t(result.presetKey === "high" ? "high" : result.presetKey);
+  const targetMet = result.fps >= target;
+  const targetStatus = targetMet
+    ? t("targetMet")
+    : (state.language === "fr" ? "Objectif FPS non atteint" : "FPS target not reached");
 
   byId("fps-value").textContent = fps;
   byId("low-value").textContent = `${low} FPS`;
@@ -128,7 +132,7 @@ function renderPerformance(result) {
   byId("scenario-title").textContent = `${presetLabel} / ${resLabel}`;
   byId("rating-badge").textContent = t(rating.key);
   byId("performance-description").textContent = t(rating.desc);
-  byId("performance-headline").textContent = result.fps >= target ? t("targetMet") : t("targetMissed");
+  byId("performance-headline").textContent = targetStatus;
   byId("confidence-value").textContent = `${round(result.confidence)}%`;
   byId("game-confidence").textContent = `${round(result.confidence)}%`;
   byId("fps-ring").style.setProperty("--ring-progress", `${clamp((result.fps / 180) * 330, 40, 330)}deg`);
@@ -146,8 +150,10 @@ function renderPerformance(result) {
   byId("bottleneck-score").textContent = (result.bottleneck === "balanced" ? t("low") : result.bottleneck === "memory" || result.bottleneck === "storage" ? t("highLabel") : t("mediumLabel")).toUpperCase();
 
   const delta = round(result.fps - target);
-  byId("goal-verdict").textContent = result.fps >= target ? t("targetMet") : t("targetMissed");
-  byId("goal-delta").textContent = `${delta >= 0 ? "+" : ""}${delta} FPS ${delta >= 0 ? t("aboveTarget") : t("belowTarget")}`;
+  byId("goal-verdict").textContent = targetStatus;
+  byId("goal-delta").textContent = state.language === "fr"
+    ? `${delta >= 0 ? "+" : ""}${delta} FPS par rapport à l’objectif`
+    : `${delta >= 0 ? "+" : ""}${delta} FPS vs target`;
   byId("goal-delta").style.color = delta >= 0 ? "var(--green)" : "var(--yellow)";
   byId("goal-marker").style.left = `${clamp((result.fps - 30) / (165 - 30) * 100, 0, 100)}%`;
 
