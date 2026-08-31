@@ -28,22 +28,32 @@
         border-radius: inherit;
         opacity: 0;
         background:
-          radial-gradient(circle at 18% 24%, rgba(101,243,255,.22), transparent 36%),
-          linear-gradient(105deg, rgba(101,243,255,.055), rgba(139,115,255,.15), rgba(101,243,255,.025));
+          radial-gradient(circle at 18% 24%, rgba(101,243,255,.25), transparent 40%),
+          linear-gradient(105deg, rgba(101,243,255,.06), rgba(139,115,255,.16), rgba(101,243,255,.03));
         box-shadow:
-          inset 0 0 0 1px rgba(101,243,255,.48),
-          inset 0 0 48px rgba(101,243,255,.08),
-          0 0 36px rgba(101,243,255,.09);
-        animation: frameforgeTargetFlash 1180ms cubic-bezier(.18,.76,.22,1) both;
+          inset 0 0 0 1px rgba(101,243,255,.5),
+          inset 0 0 54px rgba(101,243,255,.10),
+          0 0 42px rgba(101,243,255,.10);
+        animation: frameforgeTargetFlash 1050ms cubic-bezier(.2,.7,.2,1) both;
       }
 
       @keyframes frameforgeTargetFlash {
-        0%   { opacity: 0; filter: brightness(1); }
-        10%  { opacity: .88; filter: brightness(1.055); }
-        34%  { opacity: .42; }
-        58%  { opacity: .58; filter: brightness(1.028); }
-        78%  { opacity: .24; }
-        100% { opacity: 0; filter: brightness(1); }
+        0% {
+          opacity: 0;
+          filter: brightness(1);
+        }
+        28% {
+          opacity: .95;
+          filter: brightness(1.065);
+        }
+        42% {
+          opacity: .95;
+          filter: brightness(1.065);
+        }
+        100% {
+          opacity: 0;
+          filter: brightness(1);
+        }
       }
 
       .main-nav a.nav-focus-link {
@@ -61,19 +71,19 @@
         transform: translateX(-50%);
         background: var(--cyan);
         box-shadow: 0 0 13px rgba(101,243,255,.78);
-        animation: frameforgeNavDot 900ms ease-out both;
+        animation: frameforgeNavDot 780ms ease-out both;
       }
 
       @keyframes frameforgeNavDot {
-        0% { opacity: 0; transform: translateX(-50%) scale(.4); }
-        22% { opacity: 1; transform: translateX(-50%) scale(1); }
-        100% { opacity: 0; transform: translateX(-50%) scale(.35); }
+        0% { opacity: 0; transform: translateX(-50%) scale(.55); }
+        30% { opacity: 1; transform: translateX(-50%) scale(1); }
+        100% { opacity: 0; transform: translateX(-50%) scale(.8); }
       }
 
       @media (prefers-reduced-motion: reduce) {
         .nav-focus-flash::after {
           animation: none;
-          opacity: .18;
+          opacity: .22;
         }
         .main-nav a.nav-focus-link::before {
           animation: none;
@@ -107,7 +117,7 @@
     focusTarget.classList.add(FLASH_CLASS);
     sourceLink?.classList.add("nav-focus-link");
 
-    const duration = REDUCED_MOTION?.matches ? 650 : 1320;
+    const duration = REDUCED_MOTION?.matches ? 650 : 1180;
     clearTimer = window.setTimeout(() => {
       focusTarget.classList.remove(FLASH_CLASS);
       sourceLink?.classList.remove("nav-focus-link");
