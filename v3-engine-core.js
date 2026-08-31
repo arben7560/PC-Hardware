@@ -136,7 +136,7 @@ function renderGameSearch(query = "") {
   const box = byId("game-search-results");
   const q = query.trim().toLowerCase();
   const games = GAME_DATA.filter((game) => !q || game.title.toLowerCase().includes(q) || game.tags.some((tag) => tag.toLowerCase().includes(q)));
-  box.innerHTML = games.map((game) => `<button type="button" data-game-id="${game.id}"><span><strong>${game.title}</strong><small>${game.profiles.length} ${t("officialProfilesCount")} · ${game.source.publisher}</small></span><em>→</em></button>`).join("") || `<p>${state.language === "fr" ? "Aucun jeu ancré trouvé." : "No anchored game found."}</p>`;
+  box.innerHTML = games.map((game) => `<button class="game-result" type="button" data-game-id="${game.id}"><span><strong>${game.title}</strong><small>${game.profiles.length} ${t("officialProfilesCount")} · ${game.source.publisher}</small></span><em>→</em></button>`).join("") || `<p>${state.language === "fr" ? "Aucun jeu ancré trouvé." : "No anchored game found."}</p>`;
   box.hidden = false;
   $$('[data-game-id]', box).forEach((button) => button.addEventListener("click", () => {
     selectGame(button.dataset.gameId, true);
