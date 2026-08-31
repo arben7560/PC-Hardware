@@ -100,12 +100,13 @@ function recommendedProfile(baseResult) {
   return profile;
 }
 
-function ratingFor(fps, target) {
-  const ratio = fps / target;
-  if (ratio >= 1.18) return { key: "ratingExcellent", desc: "perfExcellent" };
-  if (ratio >= 1) return { key: "ratingGreat", desc: "perfGreat" };
-  if (ratio >= 0.78) return { key: "ratingGood", desc: "perfGood" };
-  if (fps >= 48) return { key: "ratingPlayable", desc: "perfPlayable" };
+function ratingFor(fps) {
+  // The experience rating describes the actual framerate, independently
+  // from the user's personal FPS target. Goal attainment is rendered separately.
+  if (fps >= 120) return { key: "ratingExcellent", desc: "perfExcellent" };
+  if (fps >= 90) return { key: "ratingGreat", desc: "perfGreat" };
+  if (fps >= 60) return { key: "ratingGood", desc: "perfGood" };
+  if (fps >= 45) return { key: "ratingPlayable", desc: "perfPlayable" };
   return { key: "ratingLimited", desc: "perfLimited" };
 }
 
