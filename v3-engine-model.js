@@ -50,9 +50,10 @@ function calculateScenario(overrides = {}) {
   const presetCpuRatio = Math.pow(PRESETS[reference.preset].cpuCost / PRESETS[presetKey].cpuCost, 0.28);
   const cpuCeiling = referenceRenderedFps * cpuHeadroom * cpuRatio * presetCpuRatio;
 
-  // CPU/GPU interaction is a soft saturation, not a hard min(). A faster GPU
-  // should still improve a GPU-heavy workload after the CPU starts to matter,
-  // but with diminishing returns as the CPU ceiling is approached/exceeded.
+  // CPU/GPU interaction uses a smooth saturation curve. The old hard min()
+  // made every faster GPU return exactly the same FPS once the CPU ceiling was
+  // crossed. Here GPU upgrades keep producing diminishing gains while the CPU
+  // progressively becomes the dominant limit.
   const gpuToCpu = gpuCeiling / Math.max(cpuCeiling, 1);
   let renderedFps;
   if (gpuToCpu <= 0.88) {
@@ -63,8 +64,6 @@ function calculateScenario(overrides = {}) {
     const saturationWindow = Math.max(cpuCeiling * 0.58, 1);
     const retainedExcess = saturationWindow * (1 - Math.exp(-excessGpu / saturationWindow));
     renderedFps = transitionStart + retainedExcess;
-    const practicalCpuCap = cpuCeiling * (1.18 + (1 - game.cpuIntensity) * 0.08);
-    renderedFps = Math.min(renderedFps, practicalCpuCap);
   }
 
   const userFgMultiplier = frameGenMultiplier(gpu, frameGen && game.frameGen);
