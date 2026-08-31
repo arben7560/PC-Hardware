@@ -25,20 +25,53 @@ function renderOfficialReference(result) {
 }
 
 function renderBuildHealth(result) {
-  const ratio = result.cpuCeiling / Math.max(result.gpuCeiling, 1);
-  const balance = clamp(100 - Math.abs(Math.log2(Math.max(ratio, 0.1))) * 34, 52, 99);
-  let health = balance;
-  if (result.ram < result.reference.ram) health -= 7;
-  if (result.storage === "hdd" && result.reference.storage !== "hdd") health -= 8;
-  if (result.vramPressure > 100) health -= 9;
-  health = clamp(health, 42, 98);
+  // Build health is now based on actual scenario constraints rather than a
+  // CPU/GPU ceiling ratio alone. The old formula could rate a build poorly
+  // simply because a GPU-heavy scenario naturally had very different ceilings.
+  const cpuPressure = clamp(result.renderedFps / Math.max(result.cpuCeiling, 1), 0, 1.2);
+  const gpuPressure = clamp(result.renderedFps / Math.max(result.gpuCeiling, 1), 0, 1.2);
+
+  // Balance means "are CPU and GPU both useful for this selected scenario?"
+  // A component can be the primary limit without making the whole build unhealthy.
+  const pressureGap = Math.abs(cpuPressure - gpuPressure);
+  const balance = clamp(100 - pressureGap * 52, 58, 99);
+
+  const memoryScore = result.ram >= result.reference.ram
+    ? 100
+    : clamp(100 - (result.reference.ram - result.ram) * 4.5, 55, 96);
+
+  const vramScore = result.vramPressure <= 90
+    ? 100
+    : result.vramPressure <= 100
+      ? clamp(100 - (result.vramPressure - 90) * 1.8, 82, 100)
+      : clamp(82 - (result.vramPressure - 100) * 2.1, 35, 82);
+
+  const storageScore = result.storage === "hdd" && result.reference.storage !== "hdd" ? 58 : 100;
+
+  let featureScore = 100;
+  if (result.rtKey !== "off" && result.gpu.rt <= 0) featureScore -= 34;
+  if (result.frameGen && !result.gpu.frameGen) featureScore -= 28;
+  featureScore = clamp(featureScore, 42, 100);
+
+  // Weighted toward the parts that can actually hurt the experience.
+  const health = clamp(
+    balance * 0.28 +
+    memoryScore * 0.17 +
+    vramScore * 0.24 +
+    storageScore * 0.11 +
+    featureScore * 0.20,
+    35,
+    99
+  );
+
   byId("balance-value").textContent = `${round(balance)}%`;
-  byId("memory-health").textContent = result.ram >= result.reference.ram ? t("good") : t("fair");
-  byId("feature-health").textContent = result.gpu.frameGen || result.game.rtLevel === 0 ? t("full") : t("partial");
+  byId("memory-health").textContent = memoryScore >= 90 && vramScore >= 82 ? t("good") : memoryScore >= 72 && vramScore >= 62 ? t("fair") : t("limited");
+  byId("feature-health").textContent = featureScore >= 90 ? t("full") : featureScore >= 65 ? t("partial") : t("limited");
   byId("health-fill").style.width = `${health}%`;
-  const key = health >= 86 ? "excellent" : health >= 72 ? "good" : health >= 58 ? "fair" : "limited";
+
+  const key = health >= 88 ? "excellent" : health >= 74 ? "good" : health >= 60 ? "fair" : "limited";
   byId("build-health-label").textContent = t(key);
-  byId("build-health-label").style.color = health >= 72 ? "var(--green)" : health >= 58 ? "var(--yellow)" : "var(--red)";
+  byId("build-health-label").style.color = health >= 74 ? "var(--green)" : health >= 60 ? "var(--yellow)" : "var(--red)";
 }
 
 function renderTelemetry(result) {
