@@ -3,6 +3,17 @@
    Additive styles loaded by script.js
 ========================================================= */
 
+/* Persistent navigation */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 120;
+  background: rgba(8, 9, 12, .88);
+  backdrop-filter: blur(18px) saturate(125%);
+  -webkit-backdrop-filter: blur(18px) saturate(125%);
+  box-shadow: 0 1px 0 rgba(255,255,255,.035), 0 14px 34px rgba(0,0,0,.18);
+}
+
 .official-reference-panel {
   padding: 24px;
   border-color: rgba(101,243,255,.12);
