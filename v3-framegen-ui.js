@@ -34,8 +34,12 @@
   function capabilityCopy(gpu, game) {
     const fr = state.language === "fr";
     if (!gpu?.frameGen || !game?.frameGen) return fr ? "Non pris en charge pour ce GPU / jeu" : "Not supported for this GPU / game";
-    if (gpu.brand === "nvidia" && gpu.gen >= 50) return "RTX 50 · Multi Frame Generation 2X / 3X / 4X";
-    if (gpu.brand === "nvidia" && gpu.gen >= 40) return fr ? "RTX 40 · Frame Generation classique · pas de MFG" : "RTX 40 · Standard Frame Generation · no MFG";
+    if (gpu.brand === "nvidia" && gpu.gen >= 50) return fr
+      ? "RTX 50 · MFG 2X / 3X / 4X · cadence nominale, pas un gain FPS garanti"
+      : "RTX 50 · MFG 2X / 3X / 4X · nominal cadence, not a guaranteed FPS gain";
+    if (gpu.brand === "nvidia" && gpu.gen >= 40) return fr
+      ? "RTX 40 · Frame Generation 2X nominal · pas de Multi Frame Generation"
+      : "RTX 40 · nominal 2X Frame Generation · no Multi Frame Generation";
     if (gpu.brand === "amd") return fr ? "AMD · Frame Generation pris en charge" : "AMD · Frame Generation supported";
     return fr ? "Frame Generation standard" : "Standard Frame Generation";
   }
@@ -149,11 +153,19 @@
     const r = state.lastResult;
     if (!body || !r) return;
     const modeLabel = r.frameGenMode === "mfg4x" ? "MFG 4X" : r.frameGenMode === "mfg3x" ? "MFG 3X" : r.frameGenMode === "mfg2x" ? "MFG 2X" : r.frameGenMode === "fg" ? "Frame Generation" : "Off";
-    const line = document.createElement("p");
+    const line = document.createElement("div");
     line.className = "framegen-method-note";
-    line.textContent = state.language === "fr"
-      ? `Mode de génération d'images actif : ${modeLabel}. Multiplicateur effectif modélisé : ×${r.frameGenMultiplier.toFixed(2)}.`
-      : `Active frame-generation mode: ${modeLabel}. Modeled effective multiplier: ×${r.frameGenMultiplier.toFixed(2)}.`;
+
+    if (r.frameGenMode === "off") {
+      line.textContent = state.language === "fr" ? "Frame Generation désactivée pour ce scénario." : "Frame Generation is disabled for this scenario.";
+    } else {
+      const generated = r.generatedFramesPerRendered || Math.max(0, (r.frameGenNominalMultiplier || 1) - 1);
+      const nominal = r.frameGenNominalMultiplier || 1;
+      const effective = r.frameGenMultiplier || 1;
+      line.innerHTML = state.language === "fr"
+        ? `<strong>${modeLabel}</strong><br>Cadence nominale : ${nominal}X (${generated} image${generated > 1 ? "s" : ""} générée${generated > 1 ? "s" : ""} par image rendue).<br>Gain effectif estimé par FrameForge pour ce scénario : ×${effective.toFixed(2)}. Il varie avec le framerate rendu, la résolution et la charge RT ; ce n'est pas un coefficient officiel NVIDIA.`
+        : `<strong>${modeLabel}</strong><br>Nominal cadence: ${nominal}X (${generated} generated frame${generated > 1 ? "s" : ""} per rendered frame).<br>FrameForge estimated effective gain for this scenario: ×${effective.toFixed(2)}. It varies with rendered FPS, resolution and RT workload; it is not an official NVIDIA coefficient.`;
+    }
     body.prepend(line);
   };
 
