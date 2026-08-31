@@ -3,7 +3,7 @@
   const FLASH_CLASS = "nav-focus-flash";
   const REDUCED_MOTION = window.matchMedia?.("(prefers-reduced-motion: reduce)");
   let clearTimer = null;
-  let scrollTimer = null;
+  let cancelScrollWait = null;
 
   function installStyles() {
     if (document.getElementById(STYLE_ID)) return;
@@ -124,44 +124,59 @@
     }, duration);
   }
 
-  function distanceToTarget(target) {
-    const top = target.getBoundingClientRect().top;
-    return Math.abs(top - 18);
-  }
-
   function waitForScrollEnd(target, callback) {
-    clearTimeout(scrollTimer);
+    cancelScrollWait?.();
 
     if (REDUCED_MOTION?.matches) {
       callback();
       return;
     }
 
-    let lastY = window.scrollY;
-    let stableFrames = 0;
-    let frameCount = 0;
-    const maxFrames = 120;
+    let finished = false;
+    let hasScrolled = false;
+    let idleTimer = null;
+    let noScrollTimer = null;
+    let safetyTimer = null;
 
-    function check() {
-      frameCount += 1;
-      const currentY = window.scrollY;
-      const delta = Math.abs(currentY - lastY);
-      const nearTarget = distanceToTarget(target) < 42;
+    const cleanup = () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("scrollend", finish);
+      document.removeEventListener("scrollend", finish);
+      clearTimeout(idleTimer);
+      clearTimeout(noScrollTimer);
+      clearTimeout(safetyTimer);
+      if (cancelScrollWait === cleanup) cancelScrollWait = null;
+    };
 
-      if (delta < 1 && nearTarget) stableFrames += 1;
-      else stableFrames = 0;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      cleanup();
+      callback();
+    };
 
-      lastY = currentY;
+    const onScroll = () => {
+      hasScrolled = true;
+      clearTimeout(idleTimer);
+      // Fallback for browsers where scrollend is unavailable: as soon as
+      // scrolling has been idle for a fraction of a frame, fire the pulse.
+      idleTimer = window.setTimeout(finish, 24);
+    };
 
-      if (stableFrames >= 2 || frameCount >= maxFrames) {
-        scrollTimer = window.setTimeout(callback, 8);
-        return;
-      }
+    cancelScrollWait = cleanup;
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("scrollend", finish, { once: true });
+    document.addEventListener("scrollend", finish, { once: true });
 
-      requestAnimationFrame(check);
-    }
+    // If clicking the current/already-visible section causes no scroll,
+    // don't leave the visual cue waiting.
+    noScrollTimer = window.setTimeout(() => {
+      if (!hasScrolled) finish();
+    }, 70);
 
-    requestAnimationFrame(check);
+    // Last-resort guard only; normal navigation finishes through scrollend
+    // or the 24ms idle detector above.
+    safetyTimer = window.setTimeout(finish, 1100);
   }
 
   function handleNavigationClick(event) {
