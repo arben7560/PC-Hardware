@@ -112,6 +112,25 @@ function renderUpgrade(upgrade, result) {
   byId("upgrade-gain").textContent = upgrade.gain ? `+${upgrade.gain}%` : "—";
 }
 
+function performanceHeadlineFor(fps) {
+  if (state.language === "fr") {
+    if (fps >= 120) return "Fluidité excellente";
+    if (fps >= 90) return "Très bonne fluidité";
+    if (fps >= 60) return "Bonne fluidité";
+    if (fps >= 45) return "Fluidité correcte";
+    if (fps >= 30) return "Expérience jouable";
+    if (fps >= 20) return "Fluidité faible";
+    return "Performances insuffisantes";
+  }
+  if (fps >= 120) return "Excellent smoothness";
+  if (fps >= 90) return "Very smooth";
+  if (fps >= 60) return "Good smoothness";
+  if (fps >= 45) return "Decent smoothness";
+  if (fps >= 30) return "Playable experience";
+  if (fps >= 20) return "Low smoothness";
+  return "Insufficient performance";
+}
+
 function renderPerformance(result) {
   state.lastResult = result;
   const target = Number(byId("target-fps").value);
@@ -132,7 +151,7 @@ function renderPerformance(result) {
   byId("scenario-title").textContent = `${presetLabel} / ${resLabel}`;
   byId("rating-badge").textContent = t(rating.key);
   byId("performance-description").textContent = t(rating.desc);
-  byId("performance-headline").textContent = targetStatus;
+  byId("performance-headline").textContent = performanceHeadlineFor(result.fps);
   byId("confidence-value").textContent = `${round(result.confidence)}%`;
   byId("game-confidence").textContent = `${round(result.confidence)}%`;
   byId("fps-ring").style.setProperty("--ring-progress", `${clamp((result.fps / 180) * 330, 40, 330)}deg`);
