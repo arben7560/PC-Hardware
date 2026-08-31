@@ -34,7 +34,7 @@
           inset 0 0 0 1px rgba(101,243,255,.5),
           inset 0 0 54px rgba(101,243,255,.10),
           0 0 42px rgba(101,243,255,.10);
-        animation: frameforgeTargetFlash 1050ms cubic-bezier(.2,.7,.2,1) both;
+        animation: frameforgeTargetFlash 760ms cubic-bezier(.2,.7,.2,1) both;
       }
 
       @keyframes frameforgeTargetFlash {
@@ -42,11 +42,11 @@
           opacity: 0;
           filter: brightness(1);
         }
-        28% {
+        25% {
           opacity: .95;
           filter: brightness(1.065);
         }
-        42% {
+        35% {
           opacity: .95;
           filter: brightness(1.065);
         }
@@ -71,7 +71,7 @@
         transform: translateX(-50%);
         background: var(--cyan);
         box-shadow: 0 0 13px rgba(101,243,255,.78);
-        animation: frameforgeNavDot 780ms ease-out both;
+        animation: frameforgeNavDot 620ms ease-out both;
       }
 
       @keyframes frameforgeNavDot {
@@ -117,7 +117,7 @@
     focusTarget.classList.add(FLASH_CLASS);
     sourceLink?.classList.add("nav-focus-link");
 
-    const duration = REDUCED_MOTION?.matches ? 650 : 1180;
+    const duration = REDUCED_MOTION?.matches ? 500 : 860;
     clearTimer = window.setTimeout(() => {
       focusTarget.classList.remove(FLASH_CLASS);
       sourceLink?.classList.remove("nav-focus-link");
@@ -158,8 +158,6 @@
     const onScroll = () => {
       hasScrolled = true;
       clearTimeout(idleTimer);
-      // Fallback for browsers where scrollend is unavailable: as soon as
-      // scrolling has been idle for a fraction of a frame, fire the pulse.
       idleTimer = window.setTimeout(finish, 24);
     };
 
@@ -168,14 +166,10 @@
     window.addEventListener("scrollend", finish, { once: true });
     document.addEventListener("scrollend", finish, { once: true });
 
-    // If clicking the current/already-visible section causes no scroll,
-    // don't leave the visual cue waiting.
     noScrollTimer = window.setTimeout(() => {
       if (!hasScrolled) finish();
     }, 70);
 
-    // Last-resort guard only; normal navigation finishes through scrollend
-    // or the 24ms idle detector above.
     safetyTimer = window.setTimeout(finish, 1100);
   }
 
