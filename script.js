@@ -1,0 +1,350 @@
+const translations = {
+en: {
+navPerformance: "Performance",
+navBuilder: "PC Builder",
+navGames: "Games",
+navBenchmarks: "Benchmarks",
+navDeals: "Deals",
+signIn: "Sign in",
+scanPC: "Scan my PC",
+
+
+heroEyebrow: "HARDWARE PERFORMANCE ENGINE",
+heroTitle1: "Don't ask if it runs.",
+heroTitle2: "Know how well.",
+heroDescription:
+  "Build your PC configuration, select a game and get a clear performance target before you install, upgrade or buy anything.",
+
+benchmarkDatabase: "Benchmark database",
+communitySamples: "community samples",
+gamesIndexed: "Games indexed",
+pcReleasesTracked: "PC releases tracked",
+liveEngine: "Live engine",
+online: "ONLINE",
+modelsUpToDate: "models up to date",
+
+yourMachine: "01 / YOUR MACHINE",
+buildYourPC: "Build your PC",
+manual: "MANUAL",
+builderDescription:
+  "Add your current hardware or create a target build.",
+
+processor: "Processor",
+graphicsCard: "Graphics card",
+memory: "Memory",
+operatingSystem: "Operating system",
+gameStorage: "Game storage",
+display: "Display",
+
+buildHealth: "Build health",
+excellent: "Excellent",
+cpuGpuBalance: "CPU / GPU balance",
+memoryHeadroom: "Memory headroom",
+good: "Good",
+modernFeatureSupport: "Modern feature support",
+full: "Full",
+
+analyzeBuild: "Analyze this build",
+saveConfiguration: "+ Save this configuration",
+
+targetGame: "02 / TARGET GAME",
+whatPlay: "What do you want to play?",
+browseGames: "Browse games →",
+
+performanceProfile: "PERFORMANCE PROFILE",
+latestProfile: "PC · Latest performance profile",
+
+preset: "Preset",
+medium: "Medium",
+high: "High",
+ultra: "Ultra",
+
+rayTracing: "Ray tracing",
+off: "Off",
+pathTracing: "Path Tracing",
+
+upscaling: "Upscaling",
+native: "Native",
+
+expectedPerformance: "03 / EXPECTED PERFORMANCE",
+buildReady: "Your build is ready for this.",
+modelConfidence: "Model confidence",
+
+avgFPS: "AVG FPS",
+excellentRating: "EXCELLENT",
+
+performanceDescription:
+  "Smooth high-refresh gameplay with strong headroom. Your GPU is doing most of the work here.",
+
+frameTime: "FRAME TIME",
+vram: "VRAM",
+
+gpuLoad: "GPU load",
+cpuLoad: "CPU load",
+vramPressure: "VRAM pressure",
+
+primaryLimit: "PRIMARY LIMIT",
+gpuBound: "GPU bound",
+normalResolution: "Normal at this resolution.",
+low: "LOW",
+
+scenarioNative: "Native",
+scenarioRecommended: "Recommended",
+scenarioHighRefresh: "High refresh",
+noUpscaling: "Ultra · No upscaling",
+dlssQuality: "DLSS Quality",
+dlssFrameGen: "DLSS + Frame Gen",
+
+smartUpgrade: "SMART UPGRADE",
+needUpgrade: "Do you need to upgrade?",
+notForTarget: "Not for this target.",
+upgradeDescription:
+  "Your current build already clears 100 FPS in the recommended profile.",
+
+optional: "OPTIONAL",
+pathTracingHeadroom: "For 4K / Path Tracing headroom",
+expectedGain: "EXPECTED GAIN",
+compareUpgrade: "Compare upgrade paths",
+
+marketIntelligence: "MARKET INTELLIGENCE",
+hardwarePriceSignal: "Hardware price signal",
+lowestTracked: "Lowest tracked",
+goodPrice: "GOOD PRICE",
+thirtyDayAverage: "30-day avg.",
+now: "Now",
+viewOffers: "View current offers",
+
+realWorldData: "REAL-WORLD DATA",
+similarBuilds: "Based on 1,284 similar builds",
+benchmarkDescription:
+  "Predictions are compared against community benchmark samples using similar CPU, GPU, resolution and graphics settings.",
+
+median: "Median",
+typicalRange: "Typical range",
+matchQuality: "Match quality",
+highQuality: "High",
+exploreBenchmarks: "Explore benchmarks",
+
+performanceModel: "Performance model v0.8 beta",
+lastDatabaseSync: "Last database sync",
+minutesAgo: "12 min ago",
+region: "Region"
+```
+
+},
+
+fr: {
+navPerformance: "Performances",
+navBuilder: "Configurateur PC",
+navGames: "Jeux",
+navBenchmarks: "Benchmarks",
+navDeals: "Bons plans",
+signIn: "Connexion",
+scanPC: "Analyser mon PC",
+
+
+heroEyebrow: "MOTEUR D'ANALYSE DES PERFORMANCES",
+heroTitle1: "Ne demandez plus s'il tourne.",
+heroTitle2: "Découvrez comment il tournera.",
+heroDescription:
+  "Configurez votre PC, sélectionnez un jeu et obtenez une estimation claire de ses performances avant de l'installer, d'améliorer votre machine ou d'acheter du nouveau matériel.",
+
+benchmarkDatabase: "Base de benchmarks",
+communitySamples: "mesures communautaires",
+gamesIndexed: "Jeux indexés",
+pcReleasesTracked: "versions PC suivies",
+liveEngine: "Moteur d'analyse",
+online: "EN LIGNE",
+modelsUpToDate: "modèles à jour",
+
+yourMachine: "01 / VOTRE MACHINE",
+buildYourPC: "Configurez votre PC",
+manual: "MANUEL",
+builderDescription:
+  "Ajoutez votre matériel actuel ou créez une configuration cible.",
+
+processor: "Processeur",
+graphicsCard: "Carte graphique",
+memory: "Mémoire vive",
+operatingSystem: "Système d'exploitation",
+gameStorage: "Stockage du jeu",
+display: "Écran",
+
+buildHealth: "État de la configuration",
+excellent: "Excellent",
+cpuGpuBalance: "Équilibre CPU / GPU",
+memoryHeadroom: "Marge mémoire",
+good: "Bonne",
+modernFeatureSupport: "Compatibilité technologies modernes",
+full: "Complète",
+
+analyzeBuild: "Analyser cette configuration",
+saveConfiguration: "+ Enregistrer cette configuration",
+
+targetGame: "02 / JEU CIBLE",
+whatPlay: "À quel jeu voulez-vous jouer ?",
+browseGames: "Parcourir les jeux →",
+
+performanceProfile: "PROFIL DE PERFORMANCES",
+latestProfile: "PC · Dernier profil de performances",
+
+preset: "Qualité graphique",
+medium: "Moyen",
+high: "Élevé",
+ultra: "Ultra",
+
+rayTracing: "Ray tracing",
+off: "Désactivé",
+pathTracing: "Path Tracing",
+
+upscaling: "Mise à l'échelle",
+native: "Natif",
+
+expectedPerformance: "03 / PERFORMANCES ESTIMÉES",
+buildReady: "Votre configuration est prête.",
+modelConfidence: "Fiabilité de l'estimation",
+
+avgFPS: "FPS MOY.",
+excellentRating: "EXCELLENT",
+
+performanceDescription:
+  "Une expérience très fluide à haut taux de rafraîchissement avec une excellente marge. Votre carte graphique effectue ici l'essentiel du travail.",
+
+frameTime: "TEMPS / IMAGE",
+vram: "VRAM",
+
+gpuLoad: "Charge GPU",
+cpuLoad: "Charge CPU",
+vramPressure: "Utilisation VRAM",
+
+primaryLimit: "LIMITE PRINCIPALE",
+gpuBound: "Limité par le GPU",
+normalResolution: "Normal à cette résolution.",
+low: "FAIBLE",
+
+scenarioNative: "Natif",
+scenarioRecommended: "Recommandé",
+scenarioHighRefresh: "Haut rafraîchissement",
+noUpscaling: "Ultra · Sans mise à l'échelle",
+dlssQuality: "DLSS Qualité",
+dlssFrameGen: "DLSS + Frame Generation",
+
+smartUpgrade: "AMÉLIORATION INTELLIGENTE",
+needUpgrade: "Avez-vous besoin d'améliorer votre PC ?",
+notForTarget: "Pas pour cet objectif.",
+upgradeDescription:
+  "Votre configuration actuelle dépasse déjà les 100 FPS avec le profil recommandé.",
+
+optional: "OPTIONNEL",
+pathTracingHeadroom: "Pour davantage de marge en 4K / Path Tracing",
+expectedGain: "GAIN ESTIMÉ",
+compareUpgrade: "Comparer les améliorations",
+
+marketIntelligence: "ANALYSE DU MARCHÉ",
+hardwarePriceSignal: "Tendance du prix du matériel",
+lowestTracked: "Prix le plus bas détecté",
+goodPrice: "BON PRIX",
+thirtyDayAverage: "Moyenne sur 30 jours",
+now: "Actuellement",
+viewOffers: "Voir les offres actuelles",
+
+realWorldData: "DONNÉES RÉELLES",
+similarBuilds: "Basé sur 1 284 configurations similaires",
+benchmarkDescription:
+  "Les estimations sont comparées aux benchmarks de la communauté utilisant des CPU, GPU, résolutions et paramètres graphiques similaires.",
+
+median: "Médiane",
+typicalRange: "Plage habituelle",
+matchQuality: "Qualité de correspondance",
+highQuality: "Élevée",
+exploreBenchmarks: "Explorer les benchmarks",
+
+performanceModel: "Modèle de performances v0.8 bêta",
+lastDatabaseSync: "Dernière synchronisation",
+minutesAgo: "Il y a 12 min",
+region: "Région"
+```
+
+}
+};
+
+/* =========================================================
+TRADUCTION
+========================================================= */
+
+function changeLanguage(language) {
+const dictionary = translations[language];
+
+if (!dictionary) {
+console.error("Langue inconnue :", language);
+return;
+}
+
+const elements = document.querySelectorAll("[data-i18n]");
+
+console.log(
+`FrameForge : traduction en "${language}", ${elements.length} éléments trouvés.`
+);
+
+elements.forEach((element) => {
+const key = element.getAttribute("data-i18n");
+
+```
+if (Object.prototype.hasOwnProperty.call(dictionary, key)) {
+  element.textContent = dictionary[key];
+} else {
+  console.warn("Traduction manquante :", key);
+}
+```
+
+});
+
+document.documentElement.lang = language;
+
+try {
+localStorage.setItem("frameforge-language", language);
+} catch (error) {
+console.warn("Impossible d'enregistrer la langue.", error);
+}
+}
+
+/* =========================================================
+INITIALISATION
+========================================================= */
+
+const languageSelector = document.getElementById("language-selector");
+
+if (!languageSelector) {
+console.error(
+'FrameForge : impossible de trouver #language-selector dans index.html'
+);
+} else {
+let startingLanguage = "en";
+
+try {
+const savedLanguage = localStorage.getItem("frameforge-language");
+
+```
+if (savedLanguage === "en" || savedLanguage === "fr") {
+  startingLanguage = savedLanguage;
+}
+```
+
+} catch (error) {
+console.warn("LocalStorage indisponible.", error);
+}
+
+languageSelector.value = startingLanguage;
+changeLanguage(startingLanguage);
+
+languageSelector.addEventListener("change", function () {
+const selectedLanguage = this.value;
+
+```
+console.log("Nouvelle langue :", selectedLanguage);
+
+changeLanguage(selectedLanguage);
+```
+
+});
+}

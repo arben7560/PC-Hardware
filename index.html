@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<meta
+ name="description"
+ content="Prototype desktop d'un configurateur PC gaming moderne — estimation FPS, compatibilité, bottleneck et recommandations d'upgrade."
+/>
+
+  <title>FrameForge — How well will it run?</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+  <div class="site-shell">
+
+```
+<!-- =====================================================
+     TOP NAVIGATION
+====================================================== -->
+
+<header class="topbar">
+
+  <a href="#" class="brand" aria-label="FrameForge Home">
+
+    <span class="brand-mark">
+      <span></span>
+      <span></span>
+    </span>
+
+    <span class="brand-copy">
+      <strong>FRAMEFORGE</strong>
+      <small>PC PERFORMANCE LAB</small>
+    </span>
+
+  </a>
+
+
+  <nav class="main-nav" aria-label="Main navigation">
+
+    <a
+      href="#"
+      class="is-active"
+      data-i18n="navPerformance"
+    >
+      Performance
+    </a>
+
+    <a
+      href="#"
+      data-i18n="navBuilder"
+    >
+      PC Builder
+    </a>
+
+    <a
+      href="#"
+      data-i18n="navGames"
+    >
+      Games
+    </a>
+
+    <a
+      href="#"
+      data-i18n="navBenchmarks"
+    >
+      Benchmarks
+    </a>
+
+    <a
+      href="#"
+      data-i18n="navDeals"
+    >
+      Deals
+    </a>
+
+  </nav>
+
+
+  <div class="topbar-actions">
+
+    <!-- LANGUAGE SELECTOR -->
+
+    <div class="language-switcher">
+
+      <span class="language-icon">
+        ◎
+      </span>
+
+      <select
+        id="language-selector"
+        class="language-selector"
+        aria-label="Language"
+      >
+
+        <option value="en">
+          EN · English
+        </option>
+
+        <option value="fr">
+          FR · Français
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <button
+      class="button button-ghost"
+      data-i18n="signIn"
+    >
+      Sign in
+    </button>
+
+
+    <button
+      class="button button-primary"
+    >
+
+      <span class="button-dot"></span>
+
+      <span data-i18n="scanPC">
+        Scan my PC
+      </span>
+
+    </button>
+
+  </div>
+
+</header>
+
+
+
+<!-- =====================================================
+     HERO
+====================================================== -->
+
+<main>
+
+  <section class="hero">
+
+    <div class="hero-copy">
+
+      <div
+        class="eyebrow"
+      >
+
+        <span class="eyebrow-pulse"></span>
+
+        <span data-i18n="heroEyebrow">
+          HARDWARE PERFORMANCE ENGINE
+        </span>
+
+      </div>
+
+
+      <h1>
+
+        <span
+          class="hero-line"
+          data-i18n="heroTitle1"
+        >
+          Don't ask if it runs.
+        </span>
+
+        <span
+          data-i18n="heroTitle2"
+        >
+          Know how well.
+        </span>
+
+      </h1>
+
+
+      <p
+        data-i18n="heroDescription"
+      >
+        Build your PC configuration, select a game and get a clear
+        performance target before you install, upgrade or buy anything.
+      </p>
+
+    </div>
+
+
+
+    <!-- HERO DATA -->
+
+    <div class="hero-status">
+
+      <div class="status-item">
+
+        <span data-i18n="benchmarkDatabase">
+          Benchmark database
+        </span>
+
+        <strong>
+          2.4M+
+        </strong>
+
+        <small data-i18n="communitySamples">
+          community samples
+        </small>
+
+      </div>
+
+
+      <div class="status-separator"></div>
+
+
+      <div class="status-item">
+
+        <span data-i18n="gamesIndexed">
+          Games indexed
+        </span>
+
+        <strong>
+          14,820
+        </strong>
+
+        <small data-i18n="pcReleasesTracked">
+          PC releases tracked
+        </small>
+
+      </div>
+
+
+      <div class="status-separator"></div>
+
+
+      <div class="status-item">
+
+        <span data-i18n="liveEngine">
+          Live engine
+        </span>
+
+        <strong
+          class="status-online"
+          data-i18n="online"
+        >
+          ONLINE
+        </strong>
+
+        <small data-i18n="modelsUpToDate">
+          models up to date
+        </small>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =====================================================
+       MAIN WORKSPACE
+  ====================================================== -->
+
+  <section class="workspace">
+
+
+
+    <!-- ===================================================
+         LEFT PANEL — PC BUILDER
+    ==================================================== -->
+
+    <aside class="panel builder-panel">
+
+
+      <div class="panel-heading">
+
+        <div>
+
+          <span
+            class="section-kicker"
+            data-i18n="yourMachine"
+          >
+            01 / YOUR MACHINE
+          </span>
+
+          <h2 data-i18n="buildYourPC">
+            Build your PC
+          </h2>
+
+        </div>
+
+
+        <span
+          class="panel-badge"
+          data-i18n="manual"
+        >
+          MANUAL
+        </span>
+
+      </div>
+
+
+      <p
+        class="panel-intro"
+        data-i18n="builderDescription"
+      >
+        Add your current hardware or create a target build.
+      </p>
+
+
+
+      <!-- CPU -->
+
+      <div class="hardware-field">
+
+        <div class="hardware-icon cpu-icon">
+          <span>CPU</span>
+        </div>
+
+
+        <div class="hardware-input">
+
+          <label
+            for="cpu"
+            data-i18n="processor"
+          >
+            Processor
+          </label>
+
+
+          <div class="select-wrap">
+
+            <select id="cpu">
+
+              <option>
+                Intel Core i7-12700KF
+              </option>
+
+              <option>
+                Intel Core i5-14600K
+              </option>
+
+              <option>
+                AMD Ryzen 7 7800X3D
+              </option>
+
+              <option>
+                AMD Ryzen 7 9800X3D
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <small>
+            12 cores · 20 threads · 5.0 GHz boost
+          </small>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- GPU -->
+
+      <div class="hardware-field">
+
+        <div class="hardware-icon gpu-icon">
+          <span>GPU</span>
+        </div>
+
+
+        <div class="hardware-input">
+
+          <label
+            for="gpu"
+            data-i18n="graphicsCard"
+          >
+            Graphics card
+          </label>
+
+
+          <div class="select-wrap">
+
+            <select id="gpu">
+
+              <option>
+                NVIDIA GeForce RTX 5070 Ti 16 GB
+              </option>
+
+              <option>
+                NVIDIA GeForce RTX 5070 12 GB
+              </option>
+
+              <option>
+                AMD Radeon RX 9070 XT 16 GB
+              </option>
+
+              <option>
+                NVIDIA GeForce RTX 5080 16 GB
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <small>
+            16 GB GDDR7 · Blackwell · DLSS / Frame Gen
+          </small>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- RAM + OS -->
+
+      <div class="hardware-mini-grid">
+
+
+        <div class="compact-field">
+
+          <label
+            for="ram"
+            data-i18n="memory"
+          >
+            Memory
+          </label>
+
+          <div class="select-wrap">
+
+            <select id="ram">
+
+              <option>32 GB DDR4</option>
+              <option>16 GB DDR4</option>
+              <option>32 GB DDR5</option>
+              <option>64 GB DDR5</option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+
+        <div class="compact-field">
+
+          <label
+            for="os"
+            data-i18n="operatingSystem"
+          >
+            Operating system
+          </label>
+
+          <div class="select-wrap">
+
+            <select id="os">
+
+              <option>
+                Windows 11
+              </option>
+
+              <option>
+                Windows 10
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- STORAGE + DISPLAY -->
+
+      <div class="hardware-mini-grid">
+
+
+        <div class="compact-field">
+
+          <label
+            for="storage"
+            data-i18n="gameStorage"
+          >
+            Game storage
+          </label>
+
+          <div class="select-wrap">
+
+            <select id="storage">
+
+              <option>
+                NVMe SSD
+              </option>
+
+              <option>
+                SATA SSD
+              </option>
+
+              <option>
+                HDD
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+
+        <div class="compact-field">
+
+          <label
+            for="resolution"
+            data-i18n="display"
+          >
+            Display
+          </label>
+
+          <div class="select-wrap">
+
+            <select id="resolution">
+
+              <option>
+                3440 × 1440
+              </option>
+
+              <option>
+                2560 × 1440
+              </option>
+
+              <option>
+                3840 × 2160
+              </option>
+
+              <option>
+                1920 × 1080
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- BUILD HEALTH -->
+
+      <div class="build-health">
+
+        <div class="build-health-header">
+
+          <span data-i18n="buildHealth">
+            Build health
+          </span>
+
+          <strong data-i18n="excellent">
+            Excellent
+          </strong>
+
+        </div>
+
+
+        <div class="health-track">
+          <span></span>
+        </div>
+
+
+        <div class="health-row">
+
+          <span data-i18n="cpuGpuBalance">
+            CPU / GPU balance
+          </span>
+
+          <strong>
+            92%
+          </strong>
+
+        </div>
+
+
+        <div class="health-row">
+
+          <span data-i18n="memoryHeadroom">
+            Memory headroom
+          </span>
+
+          <strong data-i18n="good">
+            Good
+          </strong>
+
+        </div>
+
+
+        <div class="health-row">
+
+          <span data-i18n="modernFeatureSupport">
+            Modern feature support
+          </span>
+
+          <strong data-i18n="full">
+            Full
+          </strong>
+
+        </div>
+
+      </div>
+
+
+
+      <button class="button button-primary button-full">
+
+        <span data-i18n="analyzeBuild">
+          Analyze this build
+        </span>
+
+        <span class="arrow">
+          →
+        </span>
+
+      </button>
+
+
+      <button
+        class="button button-link button-full"
+        data-i18n="saveConfiguration"
+      >
+        + Save this configuration
+      </button>
+
+
+    </aside>
+
+
+
+    <!-- ===================================================
+         RIGHT CONTENT
+    ==================================================== -->
+
+    <div class="content-stack">
+
+
+
+      <!-- =================================================
+           TARGET GAME
+      ================================================== -->
+
+      <section class="panel game-target-panel">
+
+
+        <div class="panel-heading">
+
+          <div>
+
+            <span
+              class="section-kicker"
+              data-i18n="targetGame"
+            >
+              02 / TARGET GAME
+            </span>
+
+
+            <h2 data-i18n="whatPlay">
+              What do you want to play?
+            </h2>
+
+          </div>
+
+
+          <a
+            href="#"
+            class="text-action"
+            data-i18n="browseGames"
+          >
+            Browse games →
+          </a>
+
+        </div>
+
+
+
+        <div class="game-selector">
+
+
+
+          <!-- GAME VISUAL -->
+
+          <div class="game-cover">
+
+            <div class="cover-glow"></div>
+
+            <span class="cover-chip">
+              AAA
+            </span>
+
+
+            <div class="cover-copy">
+
+              <small>
+                NIGHT CITY / 2077
+              </small>
+
+              <strong>
+                CYBERPUNK
+              </strong>
+
+              <span data-i18n="performanceProfile">
+                PERFORMANCE PROFILE
+              </span>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- GAME DATA -->
+
+          <div class="game-meta">
+
+
+            <div class="game-title-row">
+
+
+              <div>
+
+
+                <div class="game-tags">
+
+                  <span>
+                    RPG
+                  </span>
+
+                  <span>
+                    OPEN WORLD
+                  </span>
+
+                  <span>
+                    RAY TRACING
+                  </span>
+
+                </div>
+
+
+
+                <h3>
+                  Cyberpunk 2077
+                </h3>
+
+
+                <p data-i18n="latestProfile">
+                  PC · Latest performance profile
+                </p>
+
+
+              </div>
+
+
+              <button
+                class="icon-button"
+                aria-label="Change game"
+              >
+                ⌕
+              </button>
+
+
+            </div>
+
+
+
+            <!-- TARGET SETTINGS -->
+
+            <div class="target-controls">
+
+
+
+              <!-- PRESET -->
+
+              <div class="target-control">
+
+                <label data-i18n="preset">
+                  Preset
+                </label>
+
+
+                <div class="segmented">
+
+
+                  <input
+                    type="radio"
+                    name="preset"
+                    id="medium"
+                  >
+
+                  <label
+                    for="medium"
+                    data-i18n="medium"
+                  >
+                    Medium
+                  </label>
+
+
+
+                  <input
+                    type="radio"
+                    name="preset"
+                    id="high"
+                  >
+
+                  <label
+                    for="high"
+                    data-i18n="high"
+                  >
+                    High
+                  </label>
+
+
+
+                  <input
+                    type="radio"
+                    name="preset"
+                    id="ultra"
+                    checked
+                  >
+
+                  <label
+                    for="ultra"
+                    data-i18n="ultra"
+                  >
+                    Ultra
+                  </label>
+
+
+                </div>
+
+              </div>
+
+
+
+              <!-- RAY TRACING -->
+
+              <div class="target-control">
+
+                <label
+                  for="rt"
+                  data-i18n="rayTracing"
+                >
+                  Ray tracing
+                </label>
+
+
+                <div class="select-wrap">
+
+                  <select id="rt">
+
+                    <option data-i18n="off">
+                      Off
+                    </option>
+
+                    <option>
+                      Medium
+                    </option>
+
+                    <option>
+                      Ultra
+                    </option>
+
+                    <option data-i18n="pathTracing">
+                      Path Tracing
+                    </option>
+
+                  </select>
+
+                </div>
+
+              </div>
+
+
+
+              <!-- UPSCALING -->
+
+              <div class="target-control">
+
+                <label
+                  for="upscaling"
+                  data-i18n="upscaling"
+                >
+                  Upscaling
+                </label>
+
+
+                <div class="select-wrap">
+
+                  <select id="upscaling">
+
+                    <option>
+                      DLSS Quality
+                    </option>
+
+                    <option>
+                      DLSS Balanced
+                    </option>
+
+                    <option data-i18n="native">
+                      Native
+                    </option>
+
+                    <option>
+                      FSR Quality
+                    </option>
+
+                  </select>
+
+                </div>
+
+              </div>
+
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =================================================
+           PERFORMANCE PANEL
+      ================================================== -->
+
+      <section class="panel performance-panel">
+
+
+        <div class="performance-topline">
+
+
+          <div>
+
+            <span
+              class="section-kicker"
+              data-i18n="expectedPerformance"
+            >
+              03 / EXPECTED PERFORMANCE
+            </span>
+
+
+            <h2 data-i18n="buildReady">
+              Your build is ready for this.
+            </h2>
+
+          </div>
+
+
+
+          <div class="confidence">
+
+            <span data-i18n="modelConfidence">
+              Model confidence
+            </span>
+
+            <strong>
+              94%
+            </strong>
+
+          </div>
+
+
+        </div>
+
+
+
+        <div class="performance-grid">
+
+
+
+          <!-- FPS -->
+
+          <div class="fps-card">
+
+
+            <div class="fps-orbit">
+
+              <div class="fps-ring">
+
+                <div class="fps-value">
+
+                  <strong>
+                    112
+                  </strong>
+
+                  <span data-i18n="avgFPS">
+                    AVG FPS
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+
+            <div class="fps-copy">
+
+
+              <span
+                class="rating-badge"
+                data-i18n="excellentRating"
+              >
+                EXCELLENT
+              </span>
+
+
+              <h3>
+                Ultra / 3440 × 1440
+              </h3>
+
+
+              <p data-i18n="performanceDescription">
+                Smooth high-refresh gameplay with strong headroom.
+                Your GPU is doing most of the work here.
+              </p>
+
+
+
+              <div class="fps-meta">
+
+
+                <div>
+
+                  <span>
+                    1% LOW
+                  </span>
+
+                  <strong>
+                    78 FPS
+                  </strong>
+
+                </div>
+
+
+
+                <div>
+
+                  <span data-i18n="frameTime">
+                    FRAME TIME
+                  </span>
+
+                  <strong>
+                    8.9 ms
+                  </strong>
+
+                </div>
+
+
+
+                <div>
+
+                  <span data-i18n="vram">
+                    VRAM
+                  </span>
+
+                  <strong>
+                    11.8 GB
+                  </strong>
+
+                </div>
+
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- METRICS -->
+
+          <div class="metrics-card">
+
+
+            <div class="metric-row">
+
+              <div>
+
+                <span data-i18n="gpuLoad">
+                  GPU load
+                </span>
+
+                <strong>
+                  96%
+                </strong>
+
+              </div>
+
+
+              <div class="metric-track">
+                <span style="width:96%"></span>
+              </div>
+
+            </div>
+
+
+
+            <div class="metric-row">
+
+              <div>
+
+                <span data-i18n="cpuLoad">
+                  CPU load
+                </span>
+
+                <strong>
+                  62%
+                </strong>
+
+              </div>
+
+
+              <div class="metric-track">
+                <span style="width:62%"></span>
+              </div>
+
+            </div>
+
+
+
+            <div class="metric-row">
+
+              <div>
+
+                <span data-i18n="vramPressure">
+                  VRAM pressure
+                </span>
+
+                <strong>
+                  74%
+                </strong>
+
+              </div>
+
+
+              <div class="metric-track">
+                <span style="width:74%"></span>
+              </div>
+
+            </div>
+
+
+
+            <div class="metric-divider"></div>
+
+
+
+            <div class="bottleneck-box">
+
+
+              <span
+                class="bottleneck-label"
+                data-i18n="primaryLimit"
+              >
+                PRIMARY LIMIT
+              </span>
+
+
+              <div>
+
+                <strong data-i18n="gpuBound">
+                  GPU bound
+                </strong>
+
+                <span data-i18n="normalResolution">
+                  Normal at this resolution.
+                </span>
+
+              </div>
+
+
+              <div
+                class="bottleneck-score"
+                data-i18n="low"
+              >
+                LOW
+              </div>
+
+
+            </div>
+
+
+          </div>
+
+
+        </div>
+
+
+
+        <!-- SCENARIOS -->
+
+        <div class="scenario-strip">
+
+
+          <article>
+
+            <span data-i18n="scenarioNative">
+              Native
+            </span>
+
+            <strong>
+              71 FPS
+            </strong>
+
+            <small data-i18n="noUpscaling">
+              Ultra · No upscaling
+            </small>
+
+          </article>
+
+
+
+          <article class="is-highlighted">
+
+            <span data-i18n="scenarioRecommended">
+              Recommended
+            </span>
+
+            <strong>
+              112 FPS
+            </strong>
+
+            <small data-i18n="dlssQuality">
+              DLSS Quality
+            </small>
+
+          </article>
+
+
+
+          <article>
+
+            <span data-i18n="scenarioHighRefresh">
+              High refresh
+            </span>
+
+            <strong>
+              163 FPS
+            </strong>
+
+            <small data-i18n="dlssFrameGen">
+              DLSS + Frame Gen
+            </small>
+
+          </article>
+
+
+
+          <article>
+
+            <span data-i18n="pathTracing">
+              Path Tracing
+            </span>
+
+            <strong>
+              76 FPS
+            </strong>
+
+            <small data-i18n="dlssFrameGen">
+              DLSS + Frame Gen
+            </small>
+
+          </article>
+
+
+        </div>
+
+
+      </section>
+
+
+
+      <!-- =================================================
+           LOWER CARDS
+      ================================================== -->
+
+      <section class="lower-grid">
+
+
+
+        <!-- SMART UPGRADE -->
+
+        <article class="panel insight-card">
+
+
+          <div class="insight-heading">
+
+
+            <div>
+
+              <span
+                class="section-kicker"
+                data-i18n="smartUpgrade"
+              >
+                SMART UPGRADE
+              </span>
+
+              <h3 data-i18n="needUpgrade">
+                Do you need to upgrade?
+              </h3>
+
+            </div>
+
+
+            <span class="insight-icon">
+              ↗
+            </span>
+
+
+          </div>
+
+
+
+          <div class="upgrade-verdict">
+
+
+            <div class="verdict-mark">
+              ✓
+            </div>
+
+
+            <div>
+
+              <strong data-i18n="notForTarget">
+                Not for this target.
+              </strong>
+
+
+              <p data-i18n="upgradeDescription">
+                Your current build already clears 100 FPS in the
+                recommended profile.
+              </p>
+
+            </div>
+
+
+          </div>
+
+
+
+          <div class="upgrade-option">
+
+
+            <div class="upgrade-product">
+
+              <span
+                class="product-chip"
+                data-i18n="optional"
+              >
+                OPTIONAL
+              </span>
+
+              <strong>
+                RTX 5080 16 GB
+              </strong>
+
+              <small data-i18n="pathTracingHeadroom">
+                For 4K / Path Tracing headroom
+              </small>
+
+            </div>
+
+
+
+            <div class="upgrade-gain">
+
+              <span data-i18n="expectedGain">
+                EXPECTED GAIN
+              </span>
+
+              <strong>
+                +31%
+              </strong>
+
+            </div>
+
+
+          </div>
+
+
+
+          <button
+            class="button button-secondary button-full"
+            data-i18n="compareUpgrade"
+          >
+            Compare upgrade paths
+          </button>
+
+
+        </article>
+
+
+
+        <!-- PRICE SIGNAL -->
+
+        <article class="panel insight-card deal-card">
+
+
+          <div class="insight-heading">
+
+
+            <div>
+
+              <span
+                class="section-kicker"
+                data-i18n="marketIntelligence"
+              >
+                MARKET INTELLIGENCE
+              </span>
+
+              <h3 data-i18n="hardwarePriceSignal">
+                Hardware price signal
+              </h3>
+
+            </div>
+
+
+            <span class="live-dot"></span>
+
+
+          </div>
+
+
+
+          <div class="price-headline">
+
+
+            <div>
+
+              <small>
+                RTX 5070 Ti ·
+                <span data-i18n="lowestTracked">
+                  Lowest tracked
+                </span>
+              </small>
+
+              <strong>
+                €729
+              </strong>
+
+            </div>
+
+
+            <span
+              class="price-state"
+              data-i18n="goodPrice"
+            >
+              GOOD PRICE
+            </span>
+
+
+          </div>
+
+
+
+          <!-- STATIC CHART -->
+
+          <div class="mini-chart">
+
+
+            <span class="chart-grid line-1"></span>
+
+            <span class="chart-grid line-2"></span>
+
+            <span class="chart-grid line-3"></span>
+
+
+            <svg
+              viewBox="0 0 360 100"
+              role="img"
+              aria-label="Static hardware price chart"
+              preserveAspectRatio="none"
+            >
+
+              <defs>
+
+                <linearGradient
+                  id="chartFill"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+
+                  <stop
+                    offset="0%"
+                    stop-color="#7b61ff"
+                    stop-opacity="0.35"
+                  />
+
+                  <stop
+                    offset="100%"
+                    stop-color="#7b61ff"
+                    stop-opacity="0"
+                  />
+
+                </linearGradient>
+
+              </defs>
+
+
+              <path
+                class="chart-area"
+                d="M0,40
+                   C30,38 38,66 72,60
+                   C107,54 118,25 153,33
+                   C185,41 196,77 232,67
+                   C267,56 282,30 316,37
+                   C337,41 347,29 360,22
+                   L360,100
+                   L0,100 Z"
+              />
+
+
+              <path
+                class="chart-line"
+                d="M0,40
+                   C30,38 38,66 72,60
+                   C107,54 118,25 153,33
+                   C185,41 196,77 232,67
+                   C267,56 282,30 316,37
+                   C337,41 347,29 360,22"
+              />
+
+
+            </svg>
+
+          </div>
+
+
+
+          <div class="price-meta">
+
+
+            <span>
+
+              <span data-i18n="thirtyDayAverage">
+                30-day avg.
+              </span>
+
+              <strong>
+                €781
+              </strong>
+
+            </span>
+
+
+            <span>
+
+              <span data-i18n="now">
+                Now
+              </span>
+
+              <strong>
+                −6.7%
+              </strong>
+
+            </span>
+
+
+          </div>
+
+
+
+          <button
+            class="button button-secondary button-full"
+            data-i18n="viewOffers"
+          >
+            View current offers
+          </button>
+
+
+        </article>
+
+
+      </section>
+
+
+
+      <!-- =================================================
+           COMMUNITY BENCHMARK DATA
+      ================================================== -->
+
+      <section class="panel benchmark-panel">
+
+
+        <div>
+
+          <span
+            class="section-kicker"
+            data-i18n="realWorldData"
+          >
+            REAL-WORLD DATA
+          </span>
+
+
+          <h3 data-i18n="similarBuilds">
+            Based on 1,284 similar builds
+          </h3>
+
+
+          <p data-i18n="benchmarkDescription">
+            Predictions are compared against community benchmark samples
+            using similar CPU, GPU, resolution and graphics settings.
+          </p>
+
+        </div>
+
+
+
+        <div class="benchmark-stats">
+
+
+          <div>
+
+            <span data-i18n="median">
+              Median
+            </span>
+
+            <strong>
+              108 FPS
+            </strong>
+
+          </div>
+
+
+
+          <div>
+
+            <span data-i18n="typicalRange">
+              Typical range
+            </span>
+
+            <strong>
+              99–117
+            </strong>
+
+          </div>
+
+
+
+          <div>
+
+            <span data-i18n="matchQuality">
+              Match quality
+            </span>
+
+            <strong data-i18n="highQuality">
+              High
+            </strong>
+
+          </div>
+
+
+        </div>
+
+
+
+        <button
+          class="button button-ghost"
+          data-i18n="exploreBenchmarks"
+        >
+          Explore benchmarks
+        </button>
+
+
+      </section>
+
+
+    </div>
+
+  </section>
+
+</main>
+
+
+
+<!-- =====================================================
+     FOOTER STATUS
+====================================================== -->
+
+<footer class="statusbar">
+
+
+  <div>
+
+    <span class="status-led"></span>
+
+    <span data-i18n="performanceModel">
+      Performance model v0.8 beta
+    </span>
+
+  </div>
+
+
+  <div>
+
+    <span data-i18n="lastDatabaseSync">
+      Last database sync
+    </span>
+
+    <strong data-i18n="minutesAgo">
+      12 min ago
+    </strong>
+
+  </div>
+
+
+  <div>
+
+    <span data-i18n="region">
+      Region
+    </span>
+
+    <strong>
+      EU
+    </strong>
+
+  </div>
+
+
+</footer>
+```
+
+  </div>
+
+  <!-- =====================================================
+       JAVASCRIPT
+  ====================================================== -->
+
+  <script src="script.js"></script>
+
+</body>
+</html>
