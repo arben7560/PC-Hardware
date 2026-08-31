@@ -14,53 +14,64 @@
       .verdict-fps-help {
         width: 20px;
         height: 20px;
-        margin: 0 0 4px 2px;
+        margin: 0 0 5px 4px;
         padding: 0;
         display: inline-grid;
         place-items: center;
         flex: 0 0 auto;
-        border: 1px solid rgba(101,243,255,.20);
+        border: 1px solid rgba(101,243,255,.22);
         border-radius: 50%;
-        background: rgba(101,243,255,.035);
-        color: #8cecf6;
+        background: rgba(101,243,255,.045);
+        color: #92edf7;
         font-family: var(--font-display);
         font-size: 9px;
         font-weight: 800;
         line-height: 1;
         cursor: help;
-        opacity: .78;
-        transition: 150ms ease;
+        opacity: .82;
+        transition: opacity 150ms ease, border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
       }
 
       .verdict-fps-help:hover,
       .verdict-fps-help:focus-visible {
         opacity: 1;
         outline: 0;
-        border-color: rgba(101,243,255,.44);
-        background: rgba(101,243,255,.08);
-        box-shadow: 0 0 14px rgba(101,243,255,.10);
+        border-color: rgba(101,243,255,.50);
+        background: rgba(101,243,255,.095);
+        box-shadow: 0 0 15px rgba(101,243,255,.12);
       }
 
       .verdict-fps-tooltip {
         position: absolute;
         left: 50%;
-        bottom: calc(100% + 10px);
+        bottom: calc(100% + 12px);
         z-index: 90;
-        width: min(300px, calc(100vw - 48px));
-        padding: 10px 12px;
-        border: 1px solid rgba(101,243,255,.14);
-        border-radius: 10px;
-        background: rgba(8,11,16,.985);
-        box-shadow: 0 16px 38px rgba(0,0,0,.42);
-        color: var(--text-soft);
-        font-size: 9px;
-        line-height: 1.5;
+        width: min(326px, calc(100vw - 40px));
+        padding: 14px 15px;
+        border: 1px solid rgba(101,243,255,.16);
+        border-radius: 12px;
+        background: linear-gradient(180deg, rgba(12,16,22,.99), rgba(7,10,15,.99));
+        box-shadow: 0 20px 46px rgba(0,0,0,.48), inset 0 1px rgba(255,255,255,.025);
+        color: #aab3c3;
+        font-size: 10.5px;
+        font-weight: 500;
+        line-height: 1.58;
+        letter-spacing: .005em;
         text-align: left;
         opacity: 0;
         visibility: hidden;
-        transform: translate(-50%, 5px);
-        transition: 140ms ease;
+        transform: translate(-50%, 6px);
+        transition: opacity 140ms ease, visibility 140ms ease, transform 140ms ease;
         pointer-events: none;
+      }
+
+      .verdict-fps-tooltip::before {
+        content: "";
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 2px;
+        border-radius: 12px 0 0 12px;
+        background: rgba(101,243,255,.48);
       }
 
       .verdict-fps-tooltip::after {
@@ -68,10 +79,10 @@
         position: absolute;
         left: 50%;
         top: 100%;
-        width: 9px;
-        height: 9px;
-        border-right: 1px solid rgba(101,243,255,.14);
-        border-bottom: 1px solid rgba(101,243,255,.14);
+        width: 10px;
+        height: 10px;
+        border-right: 1px solid rgba(101,243,255,.16);
+        border-bottom: 1px solid rgba(101,243,255,.16);
         background: #080b10;
         transform: translate(-50%, -5px) rotate(45deg);
       }
@@ -84,7 +95,43 @@
       }
 
       .verdict-fps-tooltip strong {
-        color: var(--text);
+        color: #dce4ee;
+        font-size: 11px;
+        font-weight: 750;
+      }
+
+      @media (min-width: 3000px) {
+        .verdict-fps-tooltip {
+          width: 360px;
+          padding: 16px 17px;
+          font-size: 11.5px;
+          line-height: 1.6;
+        }
+
+        .verdict-fps-tooltip strong {
+          font-size: 12px;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .verdict-fps-tooltip {
+          left: auto;
+          right: -18px;
+          width: min(290px, calc(100vw - 32px));
+          padding: 12px 13px;
+          font-size: 10px;
+          transform: translateY(6px);
+        }
+
+        .verdict-fps-tooltip::after {
+          left: auto;
+          right: 20px;
+        }
+
+        .verdict-fps-help-wrap:hover .verdict-fps-tooltip,
+        .verdict-fps-help-wrap:focus-within .verdict-fps-tooltip {
+          transform: none;
+        }
       }
     `;
     document.head.appendChild(style);
@@ -92,8 +139,8 @@
 
   function tooltipCopy() {
     return state.language === "fr"
-      ? "Les FPS affichés sont une <strong>estimation</strong>. Les performances réelles peuvent varier selon la scène, les pilotes, les températures, les processus en arrière-plan et les réglages DLSS / RT / Frame Generation."
-      : "Displayed FPS are a <strong>modeled estimate</strong>. Real performance can vary with the scene, drivers, temperatures, background load and DLSS / RT / Frame Generation settings.";
+      ? "<strong>Estimation indicative.</strong> Les FPS réels peuvent varier selon la scène, les pilotes, les températures, la charge en arrière-plan et les réglages DLSS / RT / Frame Generation."
+      : "<strong>Indicative estimate.</strong> Actual FPS can vary with the scene, drivers, temperatures, background load and DLSS / RT / Frame Generation settings.";
   }
 
   function ensureFpsHelp() {
