@@ -1,0 +1,38 @@
+/* FrameForge V3 — explicit Frame Generation control */
+.framegen-control {
+  align-content: start;
+}
+
+.framegen-legacy-switch {
+  display: none !important;
+}
+
+.framegen-mode-select {
+  width: 100%;
+  min-height: 43px;
+  margin-top: 7px;
+}
+
+.framegen-capability {
+  display: block;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.framegen-method-note {
+  margin: 0 0 14px;
+  padding: 11px 12px;
+  border: 1px solid rgba(101,243,255,.14);
+  border-radius: 10px;
+  background: rgba(101,243,255,.045);
+  color: var(--text-soft);
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+@media (min-width: 3000px) {
+  .framegen-mode-select { min-height: 43px; font-size: 11px; }
+  .framegen-capability { font-size: 9px; }
+}
