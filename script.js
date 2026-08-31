@@ -13,6 +13,7 @@
     "v3-reference-compact.js",
     "v3-reference-layout-fix.js",
     "v3-performance-ui-tune.js",
+    "v3-bottom-section-polish.js",
     "nav-focus.js",
     "responsive-layout.js"
   ];
