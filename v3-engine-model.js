@@ -49,21 +49,38 @@ function calculateScenario(overrides = {}) {
   const cpuHeadroom = 1.65 + (1 - game.cpuIntensity) * 1.08;
   const presetCpuRatio = Math.pow(PRESETS[reference.preset].cpuCost / PRESETS[presetKey].cpuCost, 0.28);
   const cpuCeiling = referenceRenderedFps * cpuHeadroom * cpuRatio * presetCpuRatio;
-  const renderedFps = Math.min(gpuCeiling, cpuCeiling);
+
+  // CPU/GPU interaction is a soft saturation, not a hard min(). A faster GPU
+  // should still improve a GPU-heavy workload after the CPU starts to matter,
+  // but with diminishing returns as the CPU ceiling is approached/exceeded.
+  const gpuToCpu = gpuCeiling / Math.max(cpuCeiling, 1);
+  let renderedFps;
+  if (gpuToCpu <= 0.88) {
+    renderedFps = gpuCeiling;
+  } else {
+    const transitionStart = cpuCeiling * 0.88;
+    const excessGpu = Math.max(0, gpuCeiling - transitionStart);
+    const saturationWindow = Math.max(cpuCeiling * 0.58, 1);
+    const retainedExcess = saturationWindow * (1 - Math.exp(-excessGpu / saturationWindow));
+    renderedFps = transitionStart + retainedExcess;
+    const practicalCpuCap = cpuCeiling * (1.18 + (1 - game.cpuIntensity) * 0.08);
+    renderedFps = Math.min(renderedFps, practicalCpuCap);
+  }
+
   const userFgMultiplier = frameGenMultiplier(gpu, frameGen && game.frameGen);
   const displayedFps = renderedFps * userFgMultiplier;
 
   const gpuPressure = clamp(renderedFps / Math.max(gpuCeiling, 1), 0, 1);
-  const cpuPressure = clamp(renderedFps / Math.max(cpuCeiling, 1), 0, 1);
+  const cpuPressure = clamp(renderedFps / Math.max(cpuCeiling, 1), 0, 1.2);
   const gpuLoad = clamp(28 + 71 * Math.pow(gpuPressure, 0.88) + (frameGen ? 2 : 0), 28, 99);
   const threadCoverage = clamp(game.threadDemand / Math.max(cpu.threads, 1), 0.34, 1);
-  const cpuLoad = clamp(12 + 82 * cpuPressure * threadCoverage + game.cpuIntensity * 8, 16, 96);
+  const cpuLoad = clamp(12 + 82 * Math.min(cpuPressure, 1) * threadCoverage + game.cpuIntensity * 8, 16, 96);
 
   let bottleneck = "balanced";
   if (vramPressure > 110) bottleneck = "memory";
   else if (storage === "hdd" && reference.storage !== "hdd") bottleneck = "storage";
   else if (gpuCeiling < cpuCeiling * 0.88) bottleneck = "gpu";
-  else if (cpuCeiling < gpuCeiling * 0.88) bottleneck = "cpu";
+  else if (gpuCeiling > cpuCeiling * 1.10) bottleneck = "cpu";
 
   const lowPenalty = Math.max(0, cpuPressure - 0.76) * 0.13 + (storage === "hdd" ? 0.08 : 0) + (ram < reference.ram ? 0.05 : 0);
   const oneLow = displayedFps * clamp(game.lowFactor - lowPenalty, 0.54, 0.84);
