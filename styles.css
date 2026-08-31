@@ -391,3 +391,88 @@ select:hover,select:focus { border-color:rgba(101,243,255,.25); background:rgba(
   .fps-card { grid-template-columns:180px 1fr; }
   .lab-toolbar { grid-template-columns:1fr 150px 220px auto; }
 }
+
+/* Ultrawide desktop tuning — 3440x1440 and larger */
+@media (min-width:3000px) {
+  .site-shell { width:min(2000px, calc(100% - 160px)); }
+  .topbar { height:88px; }
+  .main-nav { gap:34px; }
+  .main-nav a { padding:34px 0 32px; font-size:13px; }
+  .brand-copy strong { font-size:15px; }
+  .brand-copy small { font-size:9px; }
+  .language-selector { font-size:11px; }
+  .button { min-height:44px; padding-inline:18px; font-size:12px; }
+
+  .hero { min-height:280px; padding:48px 0 38px; gap:56px; }
+  .hero-copy { max-width:880px; }
+  .hero h1 { font-size:68px; }
+  .eyebrow { font-size:10px; }
+  .hero-copy>p { max-width:760px; font-size:14px; }
+  .hero-status { padding:19px 20px; }
+  .status-item { min-width:145px; padding-inline:19px; }
+  .status-item span,.status-item small { font-size:9px; }
+  .status-item strong { font-size:20px; }
+  .status-item strong.status-online { font-size:15px; }
+
+  .lab-toolbar { min-height:82px; margin-bottom:20px; padding:16px 22px; grid-template-columns:1.4fr 190px 270px auto; gap:22px; }
+  .lab-toolbar-copy strong { font-size:14px; }
+  .goal-control label,.live-toggle-wrap small,.run-state { font-size:9px; }
+  .live-toggle-wrap strong { font-size:10px; }
+
+  .workspace { grid-template-columns:440px minmax(0,1fr); gap:20px; }
+  .content-stack { gap:20px; }
+  .builder-panel,.game-target-panel,.performance-panel { padding:28px; }
+  .panel-heading h2,.performance-topline h2 { font-size:21px; }
+  .section-kicker,.panel-badge { font-size:8px; }
+  .panel-intro { font-size:11px; }
+
+  .hardware-field { grid-template-columns:50px 1fr; gap:14px; padding:16px 0; }
+  .hardware-icon { height:50px; }
+  .hardware-icon span { font-size:9px; }
+  .hardware-input label,.compact-field label,.target-control>label { font-size:9px; }
+  .hardware-input small { font-size:9px; }
+  select { min-height:43px; font-size:11px; }
+  .build-health-header span,.health-row span,.build-health-header strong,.health-row strong { font-size:10px; }
+  .builder-note { font-size:8px; }
+
+  .game-search-wrap { width:320px; }
+  .game-search-wrap input { min-height:42px; font-size:11px; }
+  .game-selector { grid-template-columns:275px minmax(0,1fr); gap:26px; }
+  .game-cover { min-height:220px; }
+  .cover-chip,.cover-copy small,.cover-copy span { font-size:8px; }
+  .cover-copy strong { font-size:22px; }
+  .game-tags span { font-size:7px; }
+  .game-title-row h3 { font-size:28px; }
+  .game-title-row p { font-size:10px; }
+  .game-rating span { font-size:8px; }
+  .game-rating strong { font-size:14px; }
+  .target-controls { margin-top:28px; gap:12px; }
+  .segmented { min-height:43px; }
+  .segmented label { font-size:9px; }
+
+  .confidence span { font-size:8px; }
+  .confidence strong { font-size:13px; }
+  .performance-grid { margin-top:22px; gap:14px; }
+  .fps-copy h3 { font-size:21px; }
+  .fps-copy>p { font-size:11px; }
+  .fps-meta span { font-size:7px; }
+  .fps-meta strong { font-size:11px; }
+  .metric-row span,.metric-row strong { font-size:9px; }
+  .bottleneck-box>div:nth-child(2) strong { font-size:11px; }
+  .bottleneck-box>div:nth-child(2) span,.bottleneck-score { font-size:8px; }
+
+  .scenario-strip span,.scenario-strip small { font-size:8px; }
+  .scenario-strip strong { font-size:18px; }
+  .insight-heading h3 { font-size:19px; }
+  .recommendation-row strong { font-size:10px; }
+  .recommendation-row small,.recommendation-row em { font-size:8px; }
+  .telemetry-main span { font-size:9px; }
+  .telemetry-stats span { font-size:8px; }
+  .telemetry-stats strong { font-size:10px; }
+  .upgrade-verdict strong,.upgrade-product strong { font-size:11px; }
+  .upgrade-verdict p,.upgrade-product small,.price-headline small { font-size:9px; }
+  .benchmark-panel p { font-size:9px; }
+  .benchmark-stats span { font-size:7px; }
+  .benchmark-stats strong { font-size:11px; }
+  .statusbar { font-size:8px; }
+}
