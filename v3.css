@@ -63,6 +63,8 @@ select optgroup {
 
 .official-reference-panel {
   padding: 24px;
+  overflow: visible;
+  z-index: 4;
   border-color: rgba(101,243,255,.12);
   background:
     radial-gradient(circle at 88% 8%, rgba(101,243,255,.075), transparent 20rem),
@@ -70,6 +72,8 @@ select optgroup {
 }
 
 .reference-header {
+  position: relative;
+  z-index: 6;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -85,6 +89,7 @@ select optgroup {
 }
 
 .reference-title-line {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -92,6 +97,7 @@ select optgroup {
 
 .reference-help-wrap {
   position: relative;
+  z-index: 20;
   display: inline-flex;
   margin-top: 5px;
 }
@@ -127,7 +133,7 @@ select optgroup {
   position: absolute;
   left: 50%;
   bottom: calc(100% + 12px);
-  z-index: 90;
+  z-index: 500;
   width: 340px;
   padding: 15px 16px;
   border: 1px solid rgba(101,243,255,.16);
