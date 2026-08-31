@@ -40,6 +40,19 @@
         font-size: 9px;
         letter-spacing: .02em;
         white-space: nowrap;
+        border-color: rgba(101,243,255,.13);
+        background: rgba(101,243,255,.025);
+        transition: border-color 150ms ease, background 150ms ease, color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+      }
+
+      .official-reference-panel.reference-compact .reference-source-link:hover,
+      .official-reference-panel.reference-compact .reference-source-link:focus-visible {
+        color: var(--cyan);
+        border-color: rgba(101,243,255,.42);
+        background: rgba(101,243,255,.075);
+        box-shadow: 0 0 18px rgba(101,243,255,.08);
+        transform: translateY(-1px);
+        outline: 0;
       }
 
       .reference-summary-grid {
@@ -115,15 +128,17 @@
 
       .reference-hardware-list {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap: 7px 16px;
+        grid-template-columns: 1fr;
+        gap: 7px;
       }
 
       .reference-hardware-row {
-        display: flex;
+        display: grid;
+        grid-template-columns: 6px 34px minmax(0, 1fr);
         align-items: center;
         gap: 8px;
         min-width: 0;
+        padding: 3px 0;
         color: var(--text-soft);
         font-size: 10px;
         line-height: 1.35;
@@ -141,7 +156,6 @@
       }
 
       .reference-hardware-row b {
-        flex: 0 0 auto;
         color: var(--text-muted);
         font-size: 8.5px;
         font-weight: 700;
@@ -191,6 +205,25 @@
         font-weight: 650;
       }
 
+      .reference-delta-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        min-width: 54px;
+        padding: 4px 8px;
+        border: 1px solid rgba(101,243,255,.28);
+        border-radius: 999px;
+        background: rgba(101,243,255,.08);
+        color: var(--cyan);
+        font-family: var(--font-display);
+        font-size: 10px;
+        font-weight: 750;
+        line-height: 1;
+        letter-spacing: .01em;
+        box-shadow: 0 0 16px rgba(101,243,255,.08);
+      }
+
       .reference-delta-bar.is-lower {
         border-color: rgba(255,198,87,.10);
         background: rgba(255,198,87,.025);
@@ -199,6 +232,13 @@
       .reference-delta-bar.is-lower .reference-delta-icon {
         background: rgba(255,198,87,.07);
         color: var(--yellow);
+      }
+
+      .reference-delta-bar.is-lower .reference-delta-badge {
+        border-color: rgba(255,198,87,.28);
+        background: rgba(255,198,87,.07);
+        color: var(--yellow);
+        box-shadow: 0 0 16px rgba(255,198,87,.06);
       }
 
       @media (min-width: 3000px) {
@@ -224,6 +264,12 @@
         .reference-delta-bar {
           font-size: 11px;
         }
+
+        .reference-delta-badge {
+          min-width: 60px;
+          padding: 5px 9px;
+          font-size: 11px;
+        }
       }
 
       @media (max-width: 760px) {
@@ -240,10 +286,6 @@
           grid-template-columns: 1fr;
         }
 
-        .reference-hardware-list {
-          grid-template-columns: 1fr;
-        }
-
         .reference-profile-meta {
           flex-direction: column;
           gap: 3px;
@@ -251,6 +293,15 @@
 
         .reference-profile-meta span + span::before {
           display: none;
+        }
+
+        .reference-delta-bar {
+          align-items: flex-start;
+          flex-wrap: wrap;
+        }
+
+        .reference-delta-badge {
+          margin-left: 31px;
         }
       }
     `;
@@ -277,8 +328,6 @@
   }
 
   function hardwareDelta(result) {
-    // A compact orientation marker only: blend CPU/GPU capability rather than
-    // pretending this value is a direct FPS multiplier.
     const combined = result.gpuRatioRaw * 0.68 + result.cpuRatioRaw * 0.32;
     return Math.round((combined - 1) * 100);
   }
@@ -312,6 +361,7 @@
       </div>
       <div class="reference-delta-bar" id="reference-delta-bar">
         <span class="reference-delta-icon">↗</span>
+        <span class="reference-delta-badge" id="reference-delta-badge">—</span>
         <span id="reference-delta-copy">—</span>
       </div>
     `;
@@ -354,10 +404,12 @@
     const delta = hardwareDelta(result);
     const deltaBar = byId("reference-delta-bar");
     const deltaCopy = byId("reference-delta-copy");
+    const deltaBadge = byId("reference-delta-badge");
     const deltaIcon = deltaBar?.querySelector(".reference-delta-icon");
 
     deltaBar?.classList.toggle("is-lower", delta < 0);
     if (deltaIcon) deltaIcon.textContent = delta < 0 ? "↘" : delta > 0 ? "↗" : "=";
+    if (deltaBadge) deltaBadge.textContent = Math.abs(delta) < 4 ? "≈ 0%" : `${delta > 0 ? "+" : "−"}${Math.abs(delta)}%`;
 
     if (deltaCopy) {
       if (Math.abs(delta) < 4) {
@@ -366,12 +418,12 @@
           : "Your hardware is estimated to be <strong>close to this reference PC</strong>.";
       } else if (delta > 0) {
         deltaCopy.innerHTML = fr
-          ? `Votre matériel est estimé environ <strong>${delta}% au-dessus</strong> de cette configuration de référence.`
-          : `Your hardware is estimated to be about <strong>${delta}% above</strong> this reference PC.`;
+          ? "Votre matériel est estimé <strong>au-dessus</strong> de cette configuration de référence."
+          : "Your hardware is estimated to be <strong>above</strong> this reference PC.";
       } else {
         deltaCopy.innerHTML = fr
-          ? `Votre matériel est estimé environ <strong>${Math.abs(delta)}% en dessous</strong> de cette configuration de référence.`
-          : `Your hardware is estimated to be about <strong>${Math.abs(delta)}% below</strong> this reference PC.`;
+          ? "Votre matériel est estimé <strong>en dessous</strong> de cette configuration de référence."
+          : "Your hardware is estimated to be <strong>below</strong> this reference PC.";
       }
     }
   }
