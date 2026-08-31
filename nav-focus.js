@@ -146,15 +146,15 @@
       frameCount += 1;
       const currentY = window.scrollY;
       const delta = Math.abs(currentY - lastY);
-      const nearTarget = distanceToTarget(target) < 38;
+      const nearTarget = distanceToTarget(target) < 42;
 
-      if (delta < 0.75 && nearTarget) stableFrames += 1;
+      if (delta < 1 && nearTarget) stableFrames += 1;
       else stableFrames = 0;
 
       lastY = currentY;
 
-      if (stableFrames >= 3 || frameCount >= maxFrames) {
-        scrollTimer = window.setTimeout(callback, 35);
+      if (stableFrames >= 2 || frameCount >= maxFrames) {
+        scrollTimer = window.setTimeout(callback, 8);
         return;
       }
 
