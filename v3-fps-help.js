@@ -27,6 +27,7 @@
         font-size: 9px;
         font-weight: 800;
         line-height: 1;
+        letter-spacing: 0;
         cursor: help;
         opacity: .82;
         transition: opacity 150ms ease, border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
@@ -46,17 +47,19 @@
         left: 50%;
         bottom: calc(100% + 12px);
         z-index: 90;
-        width: min(326px, calc(100vw - 40px));
-        padding: 14px 15px;
-        border: 1px solid rgba(101,243,255,.16);
-        border-radius: 12px;
-        background: linear-gradient(180deg, rgba(12,16,22,.99), rgba(7,10,15,.99));
-        box-shadow: 0 20px 46px rgba(0,0,0,.48), inset 0 1px rgba(255,255,255,.025);
-        color: #aab3c3;
-        font-size: 10.5px;
-        font-weight: 500;
-        line-height: 1.58;
-        letter-spacing: .005em;
+        width: min(318px, calc(100vw - 40px));
+        padding: 13px 14px 14px;
+        border: 1px solid rgba(101,243,255,.14);
+        border-radius: 11px;
+        background: rgba(9,13,19,.985);
+        box-shadow: 0 18px 42px rgba(0,0,0,.46), inset 0 1px 0 rgba(255,255,255,.025);
+        color: #aab3c2;
+        font-family: var(--font-body, Arial, sans-serif);
+        font-size: 11px;
+        font-weight: 400;
+        line-height: 1.48;
+        letter-spacing: 0;
+        text-transform: none;
         text-align: left;
         opacity: 0;
         visibility: hidden;
@@ -68,10 +71,12 @@
       .verdict-fps-tooltip::before {
         content: "";
         position: absolute;
-        inset: 0 auto 0 0;
+        left: 0;
+        top: 12px;
+        bottom: 12px;
         width: 2px;
-        border-radius: 12px 0 0 12px;
-        background: rgba(101,243,255,.48);
+        border-radius: 999px;
+        background: rgba(101,243,255,.42);
       }
 
       .verdict-fps-tooltip::after {
@@ -79,11 +84,11 @@
         position: absolute;
         left: 50%;
         top: 100%;
-        width: 10px;
-        height: 10px;
-        border-right: 1px solid rgba(101,243,255,.16);
-        border-bottom: 1px solid rgba(101,243,255,.16);
-        background: #080b10;
+        width: 9px;
+        height: 9px;
+        border-right: 1px solid rgba(101,243,255,.14);
+        border-bottom: 1px solid rgba(101,243,255,.14);
+        background: #090d13;
         transform: translate(-50%, -5px) rotate(45deg);
       }
 
@@ -95,17 +100,22 @@
       }
 
       .verdict-fps-tooltip strong {
-        color: #dce4ee;
-        font-size: 11px;
-        font-weight: 750;
+        display: block;
+        margin: 0 0 4px;
+        color: #e2e8f0;
+        font-family: var(--font-body, Arial, sans-serif);
+        font-size: 11.5px;
+        font-weight: 700;
+        line-height: 1.3;
+        letter-spacing: 0;
       }
 
       @media (min-width: 3000px) {
         .verdict-fps-tooltip {
-          width: 360px;
-          padding: 16px 17px;
+          width: 340px;
+          padding: 14px 15px 15px;
           font-size: 11.5px;
-          line-height: 1.6;
+          line-height: 1.5;
         }
 
         .verdict-fps-tooltip strong {
@@ -117,9 +127,10 @@
         .verdict-fps-tooltip {
           left: auto;
           right: -18px;
-          width: min(290px, calc(100vw - 32px));
-          padding: 12px 13px;
-          font-size: 10px;
+          width: min(286px, calc(100vw - 32px));
+          padding: 12px 13px 13px;
+          font-size: 10.5px;
+          line-height: 1.46;
           transform: translateY(6px);
         }
 
@@ -139,8 +150,8 @@
 
   function tooltipCopy() {
     return state.language === "fr"
-      ? "<strong>Estimation indicative.</strong> Les FPS réels peuvent varier selon la scène, les pilotes, les températures, la charge en arrière-plan et les réglages DLSS / RT / Frame Generation."
-      : "<strong>Indicative estimate.</strong> Actual FPS can vary with the scene, drivers, temperatures, background load and DLSS / RT / Frame Generation settings.";
+      ? "<strong>Estimation indicative</strong>Les FPS réels peuvent varier selon la scène, les pilotes, les températures, la charge en arrière-plan et les réglages DLSS, RT ou Frame Generation."
+      : "<strong>Indicative estimate</strong>Actual FPS can vary with the scene, drivers, temperatures, background load and DLSS, RT or Frame Generation settings.";
   }
 
   function ensureFpsHelp() {
