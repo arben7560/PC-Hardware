@@ -4,6 +4,7 @@
     "v3-engine-core.js",
     "v3-engine-model.js",
     "v3-engine-render.js",
+    "v3-ux-polish.js",
     "v3-app.js",
     "nav-focus.js",
     "responsive-layout.js"
