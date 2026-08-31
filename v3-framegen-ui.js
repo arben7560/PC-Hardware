@@ -34,7 +34,7 @@
   function capabilityCopy(gpu, game) {
     const fr = state.language === "fr";
     if (!gpu?.frameGen || !game?.frameGen) return fr ? "Non pris en charge pour ce GPU / jeu" : "Not supported for this GPU / game";
-    if (gpu.brand === "nvidia" && gpu.gen >= 50) return fr ? "RTX 50 · Multi Frame Generation 2X / 3X / 4X" : "RTX 50 · Multi Frame Generation 2X / 3X / 4X";
+    if (gpu.brand === "nvidia" && gpu.gen >= 50) return "RTX 50 · Multi Frame Generation 2X / 3X / 4X";
     if (gpu.brand === "nvidia" && gpu.gen >= 40) return fr ? "RTX 40 · Frame Generation classique · pas de MFG" : "RTX 40 · Standard Frame Generation · no MFG";
     if (gpu.brand === "amd") return fr ? "AMD · Frame Generation pris en charge" : "AMD · Frame Generation supported";
     return fr ? "Frame Generation standard" : "Standard Frame Generation";
@@ -157,10 +157,16 @@
     body.prepend(line);
   };
 
-  document.addEventListener("DOMContentLoaded", () => {
+  function initFrameGenUi() {
     syncFrameGenControl({ preserve: false });
     const gpu = byId("gpu");
-    if (gpu) gpu.addEventListener("change", () => syncFrameGenControl({ preserve: false }));
+    if (gpu && !gpu.dataset.frameGenModeWired) {
+      gpu.dataset.frameGenModeWired = "true";
+      gpu.addEventListener("change", () => syncFrameGenControl({ preserve: false }));
+    }
     runAnalysis();
-  });
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initFrameGenUi);
+  else initFrameGenUi();
 })();
