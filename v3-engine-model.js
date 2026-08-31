@@ -11,8 +11,14 @@ function calculateScenario(overrides = {}) {
   const storage = overrides.storage || byId("storage").value;
 
   const request = { resolution: resolutionKey, preset: presetKey, rt: rtKey, upscaling: upscalingKey, frameGen };
-  const match = selectOfficialReference(game, request);
-  const reference = match.profile;
+
+  // Keep the official anchor stable when only the quality preset changes.
+  // The selected preset is then applied as workload, which guarantees that
+  // Medium > High > Ultra for the same hardware/resolution/RT scenario.
+  const anchorRequest = { ...request, preset: "high" };
+  const anchorMatch = selectOfficialReference(game, anchorRequest);
+  const reference = anchorMatch.profile;
+  const actualReferenceDistance = referenceDistance(reference, request);
   const refCpu = getCpu(reference.cpu);
   const refGpu = getGpu(reference.gpu);
 
@@ -63,7 +69,7 @@ function calculateScenario(overrides = {}) {
   const oneLow = displayedFps * clamp(game.lowFactor - lowPenalty, 0.54, 0.84);
   const frameTime = 1000 / Math.max(displayedFps, 1);
 
-  const referenceMatch = clamp(100 * Math.exp(-match.distance / 5.2), 34, 100);
+  const referenceMatch = clamp(100 * Math.exp(-actualReferenceDistance / 5.2), 34, 100);
   const extrapolation = Math.abs(Math.log2(Math.max(gpuRatioRaw, 0.1))) + Math.abs(Math.log2(Math.max(cpuRatioRaw, 0.1))) * 0.6;
   const confidence = clamp(76 + referenceMatch * 0.20 - extrapolation * 3.8 - (reference.upscalingKnown === false ? 3 : 0) - (vramPressure > 115 ? 3 : 0), 63, 96);
   const stability = clamp((oneLow / Math.max(displayedFps, 1)) * 100, 48, 91);
@@ -73,7 +79,7 @@ function calculateScenario(overrides = {}) {
     cpu, gpu, game, resolutionKey, presetKey, rtKey, upscalingKey, frameGen, ram, storage,
     fps: displayedFps, renderedFps, low: oneLow, frameTime, vramNeed, vramPressure, gpuLoad, cpuLoad,
     bottleneck, confidence, stability, smoothness, gpuCeiling, cpuCeiling,
-    reference, refCpu, refGpu, referenceDistance: match.distance, referenceMatch,
+    reference, refCpu, refGpu, referenceDistance: actualReferenceDistance, referenceMatch,
     gpuRatioRaw, cpuRatioRaw, workloadRatio, referenceRenderedFps, pixelRatio
   };
 }
