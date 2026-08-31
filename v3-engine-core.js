@@ -30,7 +30,24 @@ function ensureReferencePanel() {
     <div class="reference-header">
       <div>
         <span class="section-kicker" data-i18n="officialReference">OFFICIAL REFERENCE</span>
-        <h2 data-i18n="closestAnchor">Closest developer target</h2>
+        <div class="reference-title-line">
+          <h2 data-i18n="closestAnchor">Closest developer target</h2>
+          <span class="reference-help-wrap">
+            <button class="reference-help-button" type="button" aria-label="About the closest developer target" aria-describedby="reference-help-tooltip">?</button>
+            <span class="reference-help-tooltip" id="reference-help-tooltip" role="tooltip">
+              <span class="reference-help-copy reference-help-copy-en">
+                <strong>What does this mean?</strong>
+                <span>FrameForge finds the official PC target published by the developer that is closest to the settings you selected. It uses that real hardware + FPS target as a starting point, then adjusts the estimate for your own CPU, GPU, resolution and graphics settings.</span>
+                <small>The closer your setup is to this target, the more reliable the estimate tends to be.</small>
+              </span>
+              <span class="reference-help-copy reference-help-copy-fr">
+                <strong>Qu’est-ce que cela signifie ?</strong>
+                <span>FrameForge recherche la cible PC officielle publiée par le développeur qui se rapproche le plus de vos réglages. Cette configuration réelle et son objectif FPS servent de point de départ, puis l’estimation est ajustée selon votre CPU, votre GPU, votre résolution et vos options graphiques.</span>
+                <small>Plus votre configuration est proche de cette cible, plus l’estimation a tendance à être fiable.</small>
+              </span>
+            </span>
+          </span>
+        </div>
       </div>
       <a id="reference-source-link" class="reference-source-link" href="#" target="_blank" rel="noopener noreferrer">
         <span class="source-pulse"></span><span data-i18n="openOfficialSource">Open official source ↗</span>
