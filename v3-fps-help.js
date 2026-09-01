@@ -1,4 +1,4 @@
-/* FrameForge V3 — concise FPS estimate hover help */
+/* FrameForge V3 — contextual help for modeled performance metrics */
 (() => {
   function ensureFpsHelpStyles() {
     if (document.getElementById("frameforge-fps-help-styles")) return;
@@ -11,10 +11,10 @@
         align-items: flex-end;
       }
 
-      .verdict-fps-help {
+      .verdict-fps-help,
+      .ff-metric-help {
         width: 20px;
         height: 20px;
-        margin: 0 0 5px 4px;
         padding: 0;
         display: inline-grid;
         place-items: center;
@@ -33,8 +33,14 @@
         transition: opacity 150ms ease, border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
       }
 
+      .verdict-fps-help {
+        margin: 0 0 5px 4px;
+      }
+
       .verdict-fps-help:hover,
-      .verdict-fps-help:focus-visible {
+      .verdict-fps-help:focus-visible,
+      .ff-metric-help:hover,
+      .ff-metric-help:focus-visible {
         opacity: 1;
         outline: 0;
         border-color: rgba(101,243,255,.50);
@@ -110,6 +116,58 @@
         letter-spacing: 0;
       }
 
+      .fps-meta > div > span:first-child {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .ff-metric-help {
+        width: 15px;
+        height: 15px;
+        font-size: 7px;
+        vertical-align: middle;
+      }
+
+      .ff-metric-modal-note {
+        margin-top: 14px;
+        padding: 11px 12px;
+        border: 1px solid rgba(101,243,255,.10);
+        border-radius: 9px;
+        background: rgba(101,243,255,.035);
+      }
+
+      .ff-metric-modal-note strong {
+        display: block;
+        margin-bottom: 3px;
+        color: var(--text);
+      }
+
+      .ff-metric-modal-value {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 14px;
+        margin: 14px 0;
+        padding: 12px 13px;
+        border: 1px solid rgba(255,255,255,.07);
+        border-radius: 10px;
+        background: rgba(255,255,255,.02);
+      }
+
+      .ff-metric-modal-value span {
+        color: var(--text-muted);
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+      }
+
+      .ff-metric-modal-value strong {
+        color: var(--cyan);
+        font-family: var(--font-display);
+        font-size: 20px;
+      }
+
       @media (min-width: 3000px) {
         .verdict-fps-tooltip {
           width: 340px;
@@ -117,10 +175,7 @@
           font-size: 11.5px;
           line-height: 1.5;
         }
-
-        .verdict-fps-tooltip strong {
-          font-size: 12px;
-        }
+        .verdict-fps-tooltip strong { font-size: 12px; }
       }
 
       @media (max-width: 720px) {
@@ -133,16 +188,9 @@
           line-height: 1.46;
           transform: translateY(6px);
         }
-
-        .verdict-fps-tooltip::after {
-          left: auto;
-          right: 20px;
-        }
-
+        .verdict-fps-tooltip::after { left: auto; right: 20px; }
         .verdict-fps-help-wrap:hover .verdict-fps-tooltip,
-        .verdict-fps-help-wrap:focus-within .verdict-fps-tooltip {
-          transform: none;
-        }
+        .verdict-fps-help-wrap:focus-within .verdict-fps-tooltip { transform: none; }
       }
     `;
     document.head.appendChild(style);
@@ -190,11 +238,135 @@
     if (tooltip) tooltip.innerHTML = tooltipCopy();
   }
 
+  function metricCopy(metric) {
+    const fr = state.language === "fr";
+    const result = state.lastResult;
+
+    const values = {
+      low: result ? `${Math.max(1, round(result.low))} FPS` : "—",
+      frametime: result ? `${result.frameTime.toFixed(1)} ms` : "—",
+      vram: result ? `${result.vramNeed.toFixed(1)} GB` : "—"
+    };
+
+    if (metric === "low") {
+      return fr ? {
+        kicker: "STABILITÉ DES PERFORMANCES",
+        title: "Que signifie le 1% low ?",
+        valueLabel: "1% low estimé",
+        value: values.low,
+        body: "Le 1% low représente le niveau de FPS observé pendant les 1 % de moments les plus lents. Il donne une meilleure idée de la régularité qu'une simple moyenne : plus il reste proche des FPS moyens, plus l'expérience devrait paraître stable.",
+        note: "Dans FrameForge, cette valeur est modélisée à partir des FPS estimés, du profil du jeu et de facteurs comme la pression CPU, la RAM et le stockage. Ce n'est pas une mesure capturée directement en jeu."
+      } : {
+        kicker: "PERFORMANCE STABILITY",
+        title: "What does 1% low mean?",
+        valueLabel: "Estimated 1% low",
+        value: values.low,
+        body: "1% low represents the frame rate seen during the slowest 1% of moments. It gives a better sense of consistency than the average alone: the closer it stays to average FPS, the smoother the experience should feel.",
+        note: "In FrameForge, this value is modeled from estimated FPS, the game profile and factors such as CPU pressure, RAM and storage. It is not captured directly from a live benchmark."
+      };
+    }
+
+    if (metric === "frametime") {
+      return fr ? {
+        kicker: "RYTHME D'AFFICHAGE",
+        title: "Que signifie le temps par image ?",
+        valueLabel: "Temps / image estimé",
+        value: values.frametime,
+        body: "Le temps par image indique combien de millisecondes sont nécessaires pour afficher une image. Une valeur plus basse signifie que les images arrivent plus rapidement : 60 FPS correspondent à environ 16,7 ms, 120 FPS à environ 8,3 ms.",
+        note: "Cette valeur est directement dérivée des FPS estimés par la formule 1000 ÷ FPS. Elle est donc mathématiquement exacte par rapport à l'estimation FrameForge, mais elle ne constitue pas une mesure de frametime capturée sur votre PC."
+      } : {
+        kicker: "FRAME PACING",
+        title: "What does frame time mean?",
+        valueLabel: "Estimated frame time",
+        value: values.frametime,
+        body: "Frame time shows how many milliseconds are needed to display one frame. Lower is faster: 60 FPS is about 16.7 ms, while 120 FPS is about 8.3 ms.",
+        note: "This value is directly derived from estimated FPS using 1000 ÷ FPS. It is mathematically exact relative to the FrameForge estimate, but it is not a measured frame-time capture from your PC."
+      };
+    }
+
+    return fr ? {
+      kicker: "MÉMOIRE VIDÉO",
+      title: "Que représente la VRAM affichée ?",
+      valueLabel: "VRAM estimée nécessaire",
+      value: values.vram,
+      body: "Cette valeur estime la quantité de mémoire vidéo que le scénario peut demander avec la résolution, le preset et le niveau de ray tracing sélectionnés. Elle sert à repérer un risque de saturation de la carte graphique.",
+      note: "Il s'agit d'un besoin VRAM modélisé à partir des références du jeu, pas de la consommation réellement mesurée par le pilote. L'utilisation réelle peut varier selon la scène, les textures, les mises à jour du jeu et les applications ouvertes."
+    } : {
+      kicker: "VIDEO MEMORY",
+      title: "What does the VRAM value represent?",
+      valueLabel: "Estimated VRAM requirement",
+      value: values.vram,
+      body: "This value estimates how much video memory the scenario may require at the selected resolution, preset and ray-tracing level. It helps identify possible graphics-memory pressure.",
+      note: "This is a modeled VRAM requirement based on game references, not usage measured by the graphics driver. Actual usage can vary by scene, texture workload, game updates and background applications."
+    };
+  }
+
+  function openMetricHelp(metric) {
+    if (typeof openModal !== "function") return;
+    const copy = metricCopy(metric);
+    const fr = state.language === "fr";
+    openModal({
+      kicker: copy.kicker,
+      title: copy.title,
+      body: `
+        <p>${copy.body}</p>
+        <div class="ff-metric-modal-value"><span>${copy.valueLabel}</span><strong>${copy.value}</strong></div>
+        <div class="ff-metric-modal-note"><strong>${fr ? "À retenir" : "Important"}</strong>${copy.note}</div>
+      `,
+      actions: [{ label: fr ? "Fermer" : "Close", className: "button-primary", close: true }]
+    });
+  }
+
+  function ensureMetricHelp() {
+    const items = [
+      { valueId: "low-value", metric: "low", fr: "À propos du 1% low", en: "About 1% low" },
+      { valueId: "frametime-value", metric: "frametime", fr: "À propos du temps par image", en: "About frame time" },
+      { valueId: "vram-value", metric: "vram", fr: "À propos de la VRAM estimée", en: "About estimated VRAM" }
+    ];
+
+    items.forEach((item) => {
+      const value = byId(item.valueId);
+      const card = value?.parentElement;
+      const label = card?.querySelector(":scope > span:first-child");
+      if (!label) return;
+
+      let button = label.querySelector(`.ff-metric-help[data-metric="${item.metric}"]`);
+      if (!button) {
+        button = document.createElement("button");
+        button.type = "button";
+        button.className = "ff-metric-help";
+        button.dataset.metric = item.metric;
+        button.textContent = "?";
+        button.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          openMetricHelp(item.metric);
+        });
+        label.appendChild(button);
+      }
+      button.setAttribute("aria-label", state.language === "fr" ? item.fr : item.en);
+      button.title = state.language === "fr" ? item.fr : item.en;
+    });
+  }
+
+  function ensureAllHelp() {
+    ensureFpsHelp();
+    ensureMetricHelp();
+  }
+
   ensureFpsHelpStyles();
 
   const previousRenderPerformance = renderPerformance;
   renderPerformance = function renderPerformanceWithFpsHelp(result) {
     previousRenderPerformance(result);
-    ensureFpsHelp();
+    ensureAllHelp();
   };
+
+  const previousApplyLanguage = typeof applyLanguage === "function" ? applyLanguage : null;
+  if (previousApplyLanguage) {
+    applyLanguage = function applyLanguageWithMetricHelp(language, rerender = true) {
+      previousApplyLanguage(language, rerender);
+      setTimeout(ensureAllHelp, 0);
+    };
+  }
 })();
