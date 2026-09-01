@@ -6,8 +6,6 @@
     const low = Number(result.low || 0);
     const targetRatio = target > 0 ? fps / target : 1;
 
-    // The wording is intentionally driven first by the actual experience,
-    // not only by whether an arbitrary FPS target is reached.
     if (fps >= 120 && low >= 75) return { tier: "excellent", target, targetRatio };
     if (fps >= 90 && low >= 55) return { tier: "veryGood", target, targetRatio };
     if (fps >= 60 && low >= 40) return { tier: "good", target, targetRatio };
@@ -16,25 +14,84 @@
     return { tier: "critical", target, targetRatio };
   }
 
+  function workloadShares(result) {
+    const gpuPressure = clamp(result.renderedFps / Math.max(result.gpuCeiling, 1), 0.05, 1.2);
+    const cpuPressure = clamp(result.renderedFps / Math.max(result.cpuCeiling, 1), 0.05, 1.2);
+    const gpuWeight = gpuPressure * gpuPressure;
+    const cpuWeight = cpuPressure * cpuPressure;
+    const total = Math.max(gpuWeight + cpuWeight, 0.01);
+    let gpu = Math.round((gpuWeight / total) * 100);
+    gpu = clamp(gpu, 5, 95);
+    return { gpu, cpu: 100 - gpu };
+  }
+
   function componentNames(result, fr) {
-    const dominant = result.bottleneck === "cpu" ? "CPU" : result.bottleneck === "gpu" ? "GPU" : null;
+    const shares = workloadShares(result);
+    const dominant = shares.gpu >= shares.cpu ? "GPU" : "CPU";
     const part = dominant === "CPU"
       ? (fr ? "Le processeur" : "The processor")
-      : dominant === "GPU"
-        ? (fr ? "La carte graphique" : "The graphics card")
-        : null;
-    return { dominant, part };
+      : (fr ? "La carte graphique" : "The graphics card");
+    const share = dominant === "GPU" ? shares.gpu : shares.cpu;
+    const otherShare = 100 - share;
+    return { dominant, part, share, otherShare, shares };
+  }
+
+  function workloadSemantic(dominant, share, fr) {
+    const isGpu = dominant === "GPU";
+
+    if (share <= 54) {
+      return {
+        title: fr ? "Charge presque équilibrée entre CPU et GPU" : "CPU and GPU workload is nearly balanced",
+        caption: fr
+          ? "Le processeur et la carte graphique contribuent presque à parts égales sur ce scénario."
+          : "The processor and graphics card contribute almost equally in this scenario.",
+        boxLabel: fr ? "RÉPARTITION DE LA CHARGE" : "WORKLOAD BALANCE"
+      };
+    }
+
+    if (share <= 64) {
+      return {
+        title: isGpu
+          ? (fr ? "La carte graphique est légèrement plus sollicitée" : "The graphics card is slightly more involved")
+          : (fr ? "Le processeur est légèrement plus sollicité" : "The processor is slightly more involved"),
+        caption: fr
+          ? `${isGpu ? "La carte graphique" : "Le processeur"} prend une part un peu plus importante du travail, sans déséquilibre marqué.`
+          : `${isGpu ? "The graphics card" : "The processor"} takes a slightly larger share of the work, without a pronounced imbalance.`,
+        boxLabel: fr ? "COMPOSANT LE PLUS SOLLICITÉ" : "MOST INVOLVED COMPONENT"
+      };
+    }
+
+    if (share <= 79) {
+      return {
+        title: isGpu
+          ? (fr ? "La charge repose majoritairement sur le GPU" : "The workload is mostly GPU-driven")
+          : (fr ? "La charge repose majoritairement sur le CPU" : "The workload is mostly CPU-driven"),
+        caption: fr
+          ? `${isGpu ? "La carte graphique" : "Le processeur"} porte la majorité du travail sur ce scénario.`
+          : `${isGpu ? "The graphics card" : "The processor"} carries most of the workload in this scenario.`,
+        boxLabel: fr ? "COMPOSANT DOMINANT" : "DOMINANT COMPONENT"
+      };
+    }
+
+    return {
+      title: isGpu
+        ? (fr ? "La charge est fortement orientée GPU" : "The workload is strongly GPU-oriented")
+        : (fr ? "La charge est fortement orientée CPU" : "The workload is strongly CPU-oriented"),
+      caption: fr
+        ? `${isGpu ? "La carte graphique" : "Le processeur"} concentre une large majorité du travail sur ce scénario.`
+        : `${isGpu ? "The graphics card" : "The processor"} carries a large majority of the workload in this scenario.`,
+      boxLabel: fr ? "COMPOSANT DOMINANT" : "DOMINANT COMPONENT"
+    };
   }
 
   function constraintCopy(result) {
     const fr = state.language === "fr";
     const context = performanceContext(result);
-    const { dominant, part } = componentNames(result, fr);
+    const { dominant, part, share, otherShare } = componentNames(result, fr);
+    const workload = workloadSemantic(dominant, share, fr);
     const targetMet = context.target > 0 && result.fps >= context.target;
     const targetNear = context.target > 0 && result.fps >= context.target * 0.9;
 
-    // Memory and storage can affect consistency even when average FPS is high.
-    // Keep the warning factual without automatically presenting the whole PC as limited.
     if (result.bottleneck === "memory") {
       const severe = Number(result.vramPressure || 0) > 105 || context.tier === "limited" || context.tier === "critical";
       return {
@@ -77,21 +134,19 @@
       };
     }
 
-    if (!dominant || result.bottleneck === "balanced") {
+    if (result.bottleneck === "balanced" || Math.abs(share - otherShare) <= 8) {
       const isStrong = context.tier === "excellent" || context.tier === "veryGood" || context.tier === "good";
       return {
         mode: isStrong ? "healthy" : "balanced",
         meterTitle: fr ? "RÉPARTITION DE LA CHARGE" : "WORKLOAD DISTRIBUTION",
-        meterCaption: fr
-          ? "Le travail est bien réparti entre le processeur et la carte graphique sur ce scénario."
-          : "The workload is well distributed between the processor and graphics card in this scenario.",
+        meterCaption: workload.caption,
         boxLabel: fr ? "PROFIL MATÉRIEL" : "HARDWARE PROFILE",
         verdictLabel: fr ? "Profil matériel" : "Hardware profile",
-        title: fr ? "Configuration bien équilibrée" : "Well-balanced configuration",
+        title: workload.title,
         description: isStrong
           ? (fr
-            ? "Aucun composant ne ressort comme un frein notable à ce niveau de performances."
-            : "No component stands out as a meaningful performance brake at this performance level.")
+            ? `La répartition ${Math.max(share, otherShare)}/${Math.min(share, otherShare)} reste très homogène. Aucun composant ne ressort comme un frein notable à ${Math.round(result.fps)} FPS.`
+            : `The ${Math.max(share, otherShare)}/${Math.min(share, otherShare)} split remains very even. No component stands out as a meaningful brake at ${Math.round(result.fps)} FPS.`)
           : (fr
             ? "CPU et GPU sont assez proches dans leur contribution. Les réglages globaux comptent davantage qu'un seul composant."
             : "CPU and GPU contribute at similar levels. Overall settings matter more than one single component."),
@@ -99,61 +154,47 @@
       };
     }
 
-    // At 90+ FPS, a dominant component is not described as a "constraint".
-    // It simply carries more of the workload or defines the theoretical ceiling.
     if (context.tier === "excellent" || context.tier === "veryGood") {
       return {
         mode: "healthy",
         meterTitle: fr ? "RÉPARTITION DE LA CHARGE" : "WORKLOAD DISTRIBUTION",
-        meterCaption: fr
-          ? `${part} porte la plus grande part du travail sur ce scénario, ce qui est normal à ce niveau de performances.`
-          : `${part} carries most of the workload in this scenario, which is normal at this performance level.`,
-        boxLabel: fr ? "COMPOSANT LE PLUS SOLLICITÉ" : "MOST UTILIZED COMPONENT",
+        meterCaption: workload.caption,
+        boxLabel: workload.boxLabel,
         verdictLabel: fr ? "Profil de charge" : "Workload profile",
-        title: dominant === "GPU"
-          ? (fr ? "La carte graphique est pleinement exploitée" : "The graphics card is being fully utilized")
-          : (fr ? "Le processeur porte davantage la charge" : "The processor carries more of the workload"),
+        title: workload.title,
         description: fr
-          ? `${part} influence surtout le plafond maximal de FPS. Avec ${Math.round(result.fps)} FPS estimés, cela décrit la répartition du travail plutôt qu'une faiblesse du PC.`
-          : `${part} mainly influences the maximum FPS ceiling. At an estimated ${Math.round(result.fps)} FPS, this describes workload distribution rather than a weakness in the PC.`,
+          ? `La jauge attribue environ ${share}% de la charge au ${dominant} contre ${otherShare}% à l'autre composant. À ${Math.round(result.fps)} FPS estimés, cela indique surtout quel composant contribue le plus au plafond de performances, pas qu'il est saturé.`
+          : `The gauge assigns about ${share}% of the workload to the ${dominant} versus ${otherShare}% to the other component. At an estimated ${Math.round(result.fps)} FPS, this mainly shows which component contributes more to the performance ceiling, not that it is saturated.`,
         score: context.tier === "excellent" ? (fr ? "EXCELLENT" : "EXCELLENT") : (fr ? "TRÈS BON" : "VERY GOOD")
       };
     }
 
-    // 60–89 FPS is still a comfortable gaming result. Explain what shapes the
-    // result, without using "limit" unless the experience itself is degraded.
     if (context.tier === "good") {
       return {
         mode: "healthy",
         meterTitle: fr ? "RÉPARTITION DE LA CHARGE" : "WORKLOAD DISTRIBUTION",
-        meterCaption: fr
-          ? `${part} contribue davantage au plafond de performances sur ce scénario.`
-          : `${part} contributes more to the performance ceiling in this scenario.`,
-        boxLabel: fr ? "FACTEUR DOMINANT" : "DOMINANT FACTOR",
+        meterCaption: workload.caption,
+        boxLabel: workload.boxLabel,
         verdictLabel: fr ? "Facteur dominant" : "Dominant factor",
-        title: dominant === "GPU"
-          ? (fr ? "La charge repose surtout sur le GPU" : "The workload is mainly GPU-driven")
-          : (fr ? "La charge repose davantage sur le CPU" : "The workload is more CPU-driven"),
+        title: workload.title,
         description: targetMet
           ? (fr
-            ? "Votre objectif est atteint. Ce composant devient surtout important si vous cherchez davantage de marge ou un framerate encore plus élevé."
-            : "Your target is met. This component mainly matters if you want more headroom or an even higher frame rate.")
+            ? `Votre objectif est atteint. La répartition ${share}% ${dominant} / ${otherShare}% ${dominant === "GPU" ? "CPU" : "GPU"} indique simplement quel composant pèse davantage dans ce scénario.`
+            : `Your target is met. The ${share}% ${dominant} / ${otherShare}% ${dominant === "GPU" ? "CPU" : "GPU"} split simply shows which component matters more in this scenario.`)
           : (fr
-            ? `Le jeu reste fluide à environ ${Math.round(result.fps)} FPS. Pour se rapprocher de votre objectif, c'est le composant qui offrirait le plus de marge supplémentaire.`
-            : `The game remains smooth at around ${Math.round(result.fps)} FPS. To get closer to your target, this component offers the most room for improvement.`),
+            ? `Le jeu reste fluide à environ ${Math.round(result.fps)} FPS. Le ${dominant} représente environ ${share}% de la charge modélisée et constitue le premier levier pour gagner davantage de FPS.`
+            : `The game remains smooth at around ${Math.round(result.fps)} FPS. The ${dominant} represents about ${share}% of the modeled workload and is the first lever for gaining more FPS.`),
         score: fr ? "BON" : "GOOD"
       };
     }
 
-    // 45–59 FPS: introduce mild friction language, but still avoid calling the
-    // whole PC "limited" when the experience remains broadly usable.
     if (context.tier === "fair") {
       return {
         mode: "watch",
         meterTitle: fr ? "RÉPARTITION DE L'EFFORT" : "PERFORMANCE PRESSURE",
         meterCaption: fr
-          ? `${part} est le premier facteur à optimiser si vous voulez gagner des FPS.`
-          : `${part} is the first factor to optimize if you want more FPS.`,
+          ? `${part} représente environ ${share}% de l'effort modélisé et devient le premier facteur à optimiser si vous voulez gagner des FPS.`
+          : `${part} represents about ${share}% of modeled pressure and becomes the first factor to optimize if you want more FPS.`,
         boxLabel: fr ? "POINT À OPTIMISER" : "FIRST THING TO OPTIMIZE",
         verdictLabel: fr ? "Point à optimiser" : "First thing to optimize",
         title: dominant === "GPU"
@@ -170,14 +211,12 @@
       };
     }
 
-    // Below ~45 FPS, "limit" becomes appropriate because the hardware factor is
-    // now materially affecting the experience, not merely defining the ceiling.
     return {
       mode: "limited",
       meterTitle: fr ? "RÉPARTITION DE LA LIMITE" : "LIMITING FACTOR BALANCE",
       meterCaption: fr
-        ? `${part} est actuellement le principal facteur qui freine les performances sur ce scénario.`
-        : `${part} is currently the main factor holding performance back in this scenario.`,
+        ? `${part} représente environ ${share}% de la pression modélisée et freine actuellement le plus les performances.`
+        : `${part} represents about ${share}% of modeled pressure and is currently holding performance back the most.`,
       boxLabel: fr ? "LIMITE PRINCIPALE" : "MAIN LIMIT",
       verdictLabel: fr ? "Limite principale" : "Primary limit",
       title: dominant === "CPU"
@@ -203,8 +242,8 @@
         kicker: fr ? "CE QUI INFLUENCE LES PERFORMANCES" : "WHAT SHAPES PERFORMANCE",
         title: fr ? "Ce qui limite votre PC ici" : "What is limiting your PC here",
         detail: fr
-          ? "Les charges ci-dessous montrent le composant qui freine réellement le framerate dans ce scénario."
-          : "The loads below show which component is materially holding frame rate back in this scenario."
+          ? "Les indicateurs ci-dessous montrent le composant qui freine réellement le framerate dans ce scénario."
+          : "The indicators below show which component is materially holding frame rate back in this scenario."
       };
     }
 
@@ -223,8 +262,8 @@
         kicker: fr ? "CE QUI INFLUENCE LES PERFORMANCES" : "WHAT SHAPES PERFORMANCE",
         title: fr ? "Comment votre PC répartit la charge" : "How your PC distributes the workload",
         detail: fr
-          ? "À ce niveau de fluidité, on parle de répartition du travail entre les composants, pas d'une limitation préoccupante."
-          : "At this level of smoothness, this is about workload distribution between components, not a concerning limitation."
+          ? "À ce niveau de fluidité, la jauge décrit la part relative du travail entre CPU et GPU ; elle ne mesure pas leur taux d'utilisation réel."
+          : "At this level of smoothness, the gauge describes the relative CPU/GPU workload share; it does not measure their actual utilization rate."
       };
     }
 
@@ -267,8 +306,6 @@
     if (technicalTitle) technicalTitle.textContent = technical.title;
     if (technicalCopy) technicalCopy.textContent = technical.detail;
 
-    // Expose the semantic state to CSS / future UI modules without coupling the
-    // calculation engine to presentation wording.
     const performanceGrid = document.querySelector("#performance .performance-grid");
     if (performanceGrid) performanceGrid.dataset.performanceSemantics = copy.mode;
   }
